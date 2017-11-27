@@ -1,87 +1,68 @@
+// Files
 const FileHound = require('filehound');
 const FileSniffer = require('filesniffer');
-const FS = require('fs');
-const Regularity = require('regularity');
-
 // Models
 const DModule = require('./models/DModule.js');
 const DDependency = require('./models/DDependency.js');
-
+const DComponent = require('./models/DComponent.js');
 
 
 // TODO: Get root project path from command line
 
-generateGraph('/Users/dci03/Projects/Work/uma-skyq-android');
-//createModule('/Users/dci03/Projects/Personal/dgraph/docs/test-module.java');
+// Find all modules inside the given project root path
+const SEARCH_CRITERIA = FileHound.create()
+.paths('/Users/dci03/Projects/Work/uma-skyq-android')
+.ext('java');
 
-function generateGraph(url){
-  var daggerModules = [];
+Promise.all([getAllComponents()])
+  .then((val) => console.log(JSON.stringify(val[0], null, 2)))
+  .catch((msg) => console.log(msg));
 
-  // Find all modules inside the given project root path
-  const SEARCH_CRITERIA = FileHound.create()
-  .paths(url)
-  .ext('java');
+/**
+ * Scan the files using the SEARCH_CRITERIA looking for content == @Module and return a list of DModule
+ */
+function getAllModules(){
+  return new Promise((resolve, reject) => {
+    var daggerModules = [];
 
-  const moduleSniffer = FileSniffer.create(SEARCH_CRITERIA);
-  moduleSniffer.on('match', (filename) => {
-    // Create and add the module to the list
-    daggerModules.push(createModule(filename));
-  });
-  moduleSniffer.on('end', (filenames) => {
-    console.log('Found ' + filenames.length + ' dagger modules');
-
-    const componentSniffer = FileSniffer.create(SEARCH_CRITERIA);
-    componentSniffer.on('match', (filename) => {
-      console.log(filename);
+    const moduleSniffer = FileSniffer.create(SEARCH_CRITERIA);
+    moduleSniffer.on('match', (path) => {
+      // Create and add the module to the list
+      var module = new DModule();
+      module.init(path);
+      daggerModules.push(module);
     });
-    componentSniffer.on('end', (filename) => {
-      console.log('Found ' + filenames.length + ' dagger components');
+    moduleSniffer.on('end', (filenames) => {
+      console.log('Found ' + filenames.length + ' dagger modules');
+      resolve(daggerModules);
     });
-    componentSniffer.find("@Component");
+    moduleSniffer.on('error', (filename) => {
+      reject("Error during searching for module in filename " + filename);
+    });
+    moduleSniffer.find('@Module');
   });
-  moduleSniffer.find('@Module');
 }
 
 /**
- * Create a DModule object from the file path of the java module 
+ * Scan the files using the SEARCH_CRITERIA looking for content == @Component and return a list of DComponent
  */
-function createModule(path){
-  const moduleName = getFilenameFromPath(path);
-  const newModule = new DModule(moduleName);
-
-  const file = FS.readFileSync(path, 'utf8');
-  
-  // Match all the dependencies of the module using a regex
-  var regularity = new Regularity();
-  var myRegexp = regularity
-  .oneOf('protected', 'public', '') // it can be package protected
-  .maybe('space') // if package protected this is not needed
-  .oneOrMore('alphanumeric') // the dependency returned
-  .then('space')
-  .then('provide') // method name
-  .oneOrMore('alphanumeric')
-  .then('(')
-  .global()
-  .multiline()
-  .done();
-
-  var result = file.match(myRegexp);
-
-  if(result != null){
-    result.forEach(element => {
-      // This will match something like "protected PinPresenterFactory providePinPresenterFactory("
-      var dependencyName = element.split(" ")[1];
-      var dependency = new DDependency(dependencyName);
-      newModule.addDependency(dependency);
+function getAllComponents(){
+  return new Promise((resolve, reject) => {
+    var daggerComponents = [];
+    
+    const componentSniffer = FileSniffer.create(SEARCH_CRITERIA);
+    componentSniffer.on('match', (path) => {
+      // Create and add the component to the list
+      const component =  new DComponent();
+      component.init(path);
+      daggerComponents.push(component);
     });
-  }else{
-    console.log("Couldn't find any dependencies for file "+path)
-  }
-  // TODO: Get the visibility of each dependency
-  // TODO: Get the dependencies of each dependency
-  return newModule;
-}
-
-function getFilenameFromPath(path){
-  return path.split("/").pop().split(".")[0];
+    componentSniffer.on('end', (filenames) => {
+      resolve(daggerComponents);
+    });
+    componentSniffer.on('error', (filename) => {
+      reject("Error during searching for component in filename " + filename);
+    });
+    componentSniffer.find('@Component');
+  });
 }
