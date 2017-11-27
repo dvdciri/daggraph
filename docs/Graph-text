@@ -1,0 +1,19 @@
+Component{
+	Class name,
+	Annotation scope,
+	Module modules[],
+	Class injections[]
+}
+
+Module{
+	Class name,
+	Annotation scope,
+	Dependency[] providedDependencies
+}
+
+Dependency{
+	Class name,
+	Annotation scope,
+	Class[] usages,
+	Dependency[] dependency
+}

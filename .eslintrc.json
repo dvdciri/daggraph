@@ -1,0 +1,10 @@
+{
+  "extends": "airbnb-base",
+  "plugins": [
+    "import"
+  ],
+  "rules": {
+    "no-trailing-spaces": "error",
+    "eol-last":"error"
+  }
+}
