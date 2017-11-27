@@ -53,7 +53,7 @@ function getAllComponents(){
     const componentSniffer = FileSniffer.create(SEARCH_CRITERIA);
     componentSniffer.on('match', (path) => {
       // Create and add the component to the list
-      const component =  new DComponent();
+      const component = new DComponent();
       component.init(path);
       daggerComponents.push(component);
     });

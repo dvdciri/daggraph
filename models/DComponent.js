@@ -2,23 +2,16 @@ const FS = require('fs');
 const Regularity = require('regularity');
 
 function DComponent(){
-    this.name = '';
     this.modules = [];
     this.injections = [];
 }
 
-DComponent.prototype.init = (filePath) =>{
+DComponent.prototype.init = function(path){
     // Set file name
-    this.name = getFilenameFromPath(filePath);
+    this.name = getFilenameFromPath(path);
+
     // Load modules
-    loadModules(filePath);
-    // Load injections
-    loadInjections(filePath);
-};
-
-function loadInjections(path){
     const file = FS.readFileSync(path, 'utf8');
-
     var regularity = new Regularity();
     var injectionsRegex = regularity
         .then("inject(")
@@ -36,11 +29,11 @@ function loadInjections(path){
     } else {
         console.log("Couldn't find any result for injection in file " + path);
     }
-}
-  
-function loadModules(path){
-    // TODO: Impl
-}
+
+    // Load injections
+    
+    console.log(this);
+};
 
 function getFilenameFromPath(path){
     return path.split("/").pop().split(".")[0];
