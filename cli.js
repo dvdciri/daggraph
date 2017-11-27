@@ -32,8 +32,5 @@ Usage
   }
 );
 
-if (cli.input.length > 0) {
-	router.init(cli.input, cli.flags);
-} else {
-	cli.showHelp(2);
-}
+
+router.init(cli.input, cli.flags);
