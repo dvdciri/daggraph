@@ -3,7 +3,6 @@ const FileHound = require('filehound');
 const FileSniffer = require('filesniffer');
 // Models
 const DModule = require('./models/DModule.js');
-const DDependency = require('./models/DDependency.js');
 const DComponent = require('./models/DComponent.js');
 
 
@@ -14,8 +13,8 @@ const SEARCH_CRITERIA = FileHound.create()
 .paths('/Users/dci03/Projects/Work/uma-skyq-android')
 .ext('java');
 
-Promise.all([getAllComponents()])
-  .then((val) => console.log(JSON.stringify(val[0], null, 2)))
+Promise.all([getAllComponents(), getAllModules()])
+  .then((val) => console.log(JSON.stringify(val, null, 2)))
   .catch((msg) => console.log(msg));
 
 /**

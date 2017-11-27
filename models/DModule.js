@@ -1,13 +1,14 @@
 const FS = require('fs');
 const Regularity = require('regularity');
+const DDependency = require('./DDependency.js');
 
 function DModule(){
     this.providedDependencies = [];
 }
 
-DModule.prototype.init = (filePath) =>{
+DModule.prototype.init = function(filePath){
     // Load name
-    this.name = getFilenameFromPath();
+    this.name = getFilenameFromPath(filePath);
     //Load provided dependencies
     this.providedDependencies = getProvidedDependencies(filePath);
 };
