@@ -7,11 +7,11 @@
 
 ## Install
 
-Coming up..
+Coming soon..
 
 ## Usage
 
-Coming up..
+Coming soom..
 
 ## Created by
 [Davide Cirillo](https://github.com/dvdciri)
