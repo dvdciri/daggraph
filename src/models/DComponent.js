@@ -1,5 +1,6 @@
 const FS = require('fs');
 const Regularity = require('regularity');
+const Utils = require('./../utils/utils');
 
 function DComponent(){
     this.modules = [];
@@ -8,7 +9,7 @@ function DComponent(){
 
 DComponent.prototype.init = function(path){
     // Set file name
-    this.name = getFilenameFromPath(path);
+    this.name = Utils.getFilenameFromPath(path);
 
     const file = FS.readFileSync(path, 'utf8');
     
@@ -27,8 +28,6 @@ DComponent.prototype.init = function(path){
             var injection = element.split('(')[1];
             this.injections.push(injection);
         });
-    } else {
-        console.log("Couldn't find any result for injection in file " + path);
     }
 
     // Load modules
@@ -48,15 +47,7 @@ DComponent.prototype.init = function(path){
             var moduleName = element.split('.')[0];
             this.modules.push(moduleName);
         });
-    } else {
-        console.log("Couldn't find any result for injection in file " + path);
     }
-
-    console.log(this);
 };
-
-function getFilenameFromPath(path){
-    return path.split("/").pop().split(".")[0];
-}
 
 module.exports = DComponent;

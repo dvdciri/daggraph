@@ -1,6 +1,7 @@
 const FS = require('fs');
 const Regularity = require('regularity');
 const DDependency = require('./DDependency.js');
+const Utils = require('./../utils/utils');
 
 function DModule(){
     this.providedDependencies = [];
@@ -8,7 +9,7 @@ function DModule(){
 
 DModule.prototype.init = function(filePath){
     // Load name
-    this.name = getFilenameFromPath(filePath);
+    this.name = Utils.getFilenameFromPath(filePath);
     //Load provided dependencies
     this.providedDependencies = getProvidedDependencies(filePath);
 };
@@ -47,10 +48,6 @@ function getProvidedDependencies(path){
     // TODO: Get the dependencies of each dependency
 
     return result;
-}
-
-function getFilenameFromPath(path){
-    return path.split("/").pop().split(".")[0];
 }
 
 module.exports = DModule;

@@ -2,7 +2,6 @@
 'use strict';
 
 const Chalk = require('chalk');
-const Utils = require('./utils/utils');
 const log = console.log;
 // Files
 const FileHound = require('filehound');
@@ -12,11 +11,39 @@ const DModule = require('./models/DModule.js');
 const DComponent = require('./models/DComponent.js');
 const fs = require('fs');
 
+// Main code //
+const self = module.exports = {
+	init: (input, flags) => {
+
+    if (!gradleFileExists()) {
+      log(Chalk.red(`This is not a gradle folder`));
+      process.exit(2);
+    }
+
+    // Find all modules inside the given project root path
+    const searchCriteria = FileHound.create()
+      .paths('./')
+      // .discard("*build/*")		
+      .depth(20)
+      .ignoreHiddenDirectories()
+      .ignoreHiddenFiles()		
+      .ext('java');
+    
+    getAllModules(searchCriteria)
+    .then(m => getAllComponents(searchCriteria, m))
+    .then(c =>{
+      
+    });
+  }
+};
+
 /**
  * Scan the files using the SEARCH_CRITERIA looking for content == @Module and return a list of DModule
  */
 function getAllModules(searchCriteria){
   return new Promise((resolve, reject) => {
+    log("Loading modules..");
+    
     var daggerModules = [];
 
     const moduleSniffer = FileSniffer.create(searchCriteria);
@@ -27,7 +54,7 @@ function getAllModules(searchCriteria){
       daggerModules.push(module);
     });
     moduleSniffer.on('end', (filenames) => {
-      console.log('Found ' + filenames.length + ' dagger modules');
+      log('Found ' + filenames.length + ' dagger modules');
       resolve(daggerModules);
     });
     moduleSniffer.on('error', (filename) => {
@@ -40,8 +67,10 @@ function getAllModules(searchCriteria){
 /**
  * Scan the files using the SEARCH_CRITERIA looking for content == @Component and return a list of DComponent
  */
-function getAllComponents(searchCriteria){
+function getAllComponents(searchCriteria, allModules){
   return new Promise((resolve, reject) => {
+    log("Loading components..");
+    
     var daggerComponents = [];
     
     const componentSniffer = FileSniffer.create(searchCriteria);
@@ -52,6 +81,7 @@ function getAllComponents(searchCriteria){
       daggerComponents.push(component);
     });
     componentSniffer.on('end', (filenames) => {
+      log('Found ' + filenames.length + ' dagger components');      
       resolve(daggerComponents);
     });
     componentSniffer.on('error', (filename) => {
@@ -64,34 +94,3 @@ function getAllComponents(searchCriteria){
 function gradleFileExists(){
 	return fs.existsSync('./build.gradle');
 }
-
-// Main code //
-const self = module.exports = {
-	init: (input, flags) => {
-
-		if (!gradleFileExists()) {
-			log(Chalk.red(`This is not a gradle folder`));
-			process.exit(2);
-		}
-
-		const command = input[0];
-		const params = input.subarray(1, input.length);
-
-		// TODO: Get root project path from command line
-
-	// Find all modules inside the given project root path
-	const searchCriteria = FileHound.create()
-		.paths('./')
-		// .discard("*build/*")		
-		.depth(15)
-		.ignoreHiddenDirectories()
-		.ignoreHiddenFiles()		
-		.ext('java');
-
-	Promise.all([getAllComponents(searchCriteria), getAllModules(searchCriteria)])
-		.then((val) => console.log(JSON.stringify(val, null, 2)))
-		.catch((msg) => console.log(msg));
-
-
-		}
-};
