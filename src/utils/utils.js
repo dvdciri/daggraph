@@ -7,5 +7,14 @@ const fs = require('fs');
 const self = module.exports = {
 	getFilenameFromPath: (path) => {
 		return path.split("/").pop().split(".")[0];
+	},
+	getDefaultSearchCriteria: (rootPath) => {
+		return FileHound.create()
+		.paths(rootPath)
+		// .discard("*build/*")		
+		.depth(20)
+		.ignoreHiddenDirectories()
+		.ignoreHiddenFiles()		
+		.ext('java');
 	}
 };

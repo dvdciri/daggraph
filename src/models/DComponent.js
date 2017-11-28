@@ -7,12 +7,51 @@ function DComponent(){
     this.injections = [];
 }
 
-DComponent.prototype.init = function(path){
+DComponent.prototype.init = function(path, allModules){
     // Set file name
     this.name = Utils.getFilenameFromPath(path);
 
     const file = FS.readFileSync(path, 'utf8');
+
+    this.injections = getInjections(file);
     
+    this.modules = getModules(file, allModules);
+};
+
+function getModules(file, allModules){
+    var result = []; 
+
+    // Load modules
+    var regularity1 = new Regularity();
+    var modulesRegex = regularity1
+        .oneOrMore("alphanumeric")
+        .then('Module')
+        .then(".class")
+        .maybe(',')
+        .global()
+        .multiline()
+        .done();
+
+    // For each module specified in the component, try to find it in the loaded modules
+    var moduleMatches = file.match(modulesRegex);
+    if (moduleMatches != null) {
+        moduleMatches.forEach(element => {
+            var moduleName = element.split('.')[0];
+
+            // If the model name in the component matches one of the modules that we have loaded, then add it to the component
+            allModules.forEach(module => {
+                if (moduleName === module.name) {
+                    result = module;
+                }
+            });
+        });
+    }
+    return result;
+}
+
+function getInjections(file){
+    var result = []; 
+
     // Load injections
     var regularity = new Regularity();
     var injectionsRegex = regularity
@@ -26,28 +65,10 @@ DComponent.prototype.init = function(path){
     if (matches != null) {
         matches.forEach(element => {
             var injection = element.split('(')[1];
-            this.injections.push(injection);
+            result.push(injection);
         });
     }
-
-    // Load modules
-    var regularity1 = new Regularity();
-    var modulesRegex = regularity1
-        .oneOrMore("alphanumeric")
-        .then('Module')
-        .then(".class")
-        .maybe(',')
-        .global()
-        .multiline()
-        .done();
-
-    var moduleMatches = file.match(modulesRegex);
-    if (moduleMatches != null) {
-        moduleMatches.forEach(element => {
-            var moduleName = element.split('.')[0];
-            this.modules.push(moduleName);
-        });
-    }
-};
+    return result;
+}
 
 module.exports = DComponent;

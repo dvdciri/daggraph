@@ -4,13 +4,15 @@
 const Chalk = require('chalk');
 const log = console.log;
 const path = require('path');
+const Regularity = require('regularity');
+const Utils = require('./utils/utils');
+const fs = require('fs');
 // Files
 const FileHound = require('filehound');
 const FileSniffer = require('filesniffer');
 // Models
 const DModule = require('./models/DModule.js');
 const DComponent = require('./models/DComponent.js');
-const fs = require('fs');
 
 // Main code //
 const self = module.exports = {
@@ -43,10 +45,12 @@ const self = module.exports = {
       .ignoreHiddenFiles()		
       .ext('java');
     
-    getAllModules(searchCriteria)
-    .then(m => getAllComponents(searchCriteria, m))
+    loadAllModules(searchCriteria)
+    .then(m => loadAllInjections(searchCriteria, m))
+    .then(m => loadAllComponents(searchCriteria, m))
     .then(c =>{
       // TODO: Display graph
+      log(JSON.stringify(c, null, 2));
     });
   }
 };
@@ -54,7 +58,7 @@ const self = module.exports = {
 /**
  * Scan the files using the SEARCH_CRITERIA looking for content == @Module and return a list of DModule
  */
-function getAllModules(searchCriteria){
+function loadAllModules(searchCriteria){
   return new Promise((resolve, reject) => {
     log("Loading modules..");
     
@@ -81,7 +85,7 @@ function getAllModules(searchCriteria){
 /**
  * Scan the files using the SEARCH_CRITERIA looking for content == @Component and return a list of DComponent
  */
-function getAllComponents(searchCriteria, allModules){
+function loadAllComponents(searchCriteria, allModules){
   return new Promise((resolve, reject) => {
     log("Loading components..");
     
@@ -91,7 +95,7 @@ function getAllComponents(searchCriteria, allModules){
     componentSniffer.on('match', (path) => {
       // Create and add the component to the list
       const component = new DComponent();
-      component.init(path);
+      component.init(path, allModules);
       daggerComponents.push(component);
     });
     componentSniffer.on('end', (filenames) => {
@@ -102,5 +106,36 @@ function getAllComponents(searchCriteria, allModules){
       reject("Error during searching for component in filename " + filename);
     });
     componentSniffer.find('@Component');
+  });
+}
+
+function loadAllInjections(searchCriteria, allModules){
+  return new Promise((resolve, reject) => {
+    log("Loading injections..");
+    
+    allModules.forEach(module => {
+      module.providedDependencies.forEach(dep => {
+        // Create a regex that matches the injection of that dependency
+        var regularity = new Regularity();
+        var regex = regularity
+        .then("@Inject")
+        .oneOf("\n", "space")
+        .oneOf("protected", "public")
+        .then("space")
+        .then(dep.name)
+        .multiline()
+        .done();
+        
+        const injectionSniffer = FileSniffer.create(searchCriteria);
+        injectionSniffer.on('match', (path) => {
+          var fileName = Utils.getFilenameFromPath(path);
+          dep.addUsageClass(fileName);
+        });
+        injectionSniffer.find(regex.toString());
+      });
+    });
+
+    // TODO: This is wrong, it's async
+    return allModules;
   });
 }

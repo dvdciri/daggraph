@@ -1,19 +1,19 @@
 Component{
 	Class name,
-	Annotation scope,
+	Annotation scope, <- missing
 	Module modules[],
 	Class injections[]
 }
 
 Module{
 	Class name,
-	Annotation scope,
+	Annotation scope, <- missing
 	Dependency[] providedDependencies
 }
 
 Dependency{
 	Class name,
-	Annotation scope,
-	Class[] usages,
-	Dependency[] dependency
+	Annotation scope, <- missing
+	Class[] usages, <- missing
+	Dependency[] dependency <- missing
 }

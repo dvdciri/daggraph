@@ -50,4 +50,8 @@ function getProvidedDependencies(path){
     return result;
 }
 
+function getDependencyUsages(name){
+  
+}
+
 module.exports = DModule;
