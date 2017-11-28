@@ -8,7 +8,7 @@
     "url": "https://github.com/dvdciri"
   },
   "scripts": {
-    "start": "node cli.js"
+    "start": "nodecli.js"
   },
   "bin": {
     "daggraph": "cli.js"

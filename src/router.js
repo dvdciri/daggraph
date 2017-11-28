@@ -3,6 +3,7 @@
 
 const Chalk = require('chalk');
 const log = console.log;
+const path = require('path');
 // Files
 const FileHound = require('filehound');
 const FileSniffer = require('filesniffer');
@@ -15,16 +16,27 @@ const fs = require('fs');
 const self = module.exports = {
 	init: (input, flags) => {
 
-    if (!gradleFileExists()) {
+    var rootPath = './';
+
+    // Check for specified path and validate
+    if (input[0] !== undefined) {
+      if (!fs.lstatSync(input[0]).isDirectory()) {
+        log(Chalk.red('Path is not a directory'));
+        process.exit(2);
+      } else {
+        rootPath = input[0];
+        log('Using custom path ' + rootPath)
+      }
+    }
+
+    if (!fs.existsSync(rootPath + 'build.gradle')) {
       log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
-    log(input[0]);
-
     // Find all modules inside the given project root path
     const searchCriteria = FileHound.create()
-      .paths('./')
+      .paths(rootPath)
       // .discard("*build/*")		
       .depth(20)
       .ignoreHiddenDirectories()
@@ -34,7 +46,7 @@ const self = module.exports = {
     getAllModules(searchCriteria)
     .then(m => getAllComponents(searchCriteria, m))
     .then(c =>{
-      
+      // TODO: Display graph
     });
   }
 };
@@ -91,8 +103,4 @@ function getAllComponents(searchCriteria, allModules){
     });
     componentSniffer.find('@Component');
   });
-}
-
-function gradleFileExists(){
-	return fs.existsSync('./build.gradle');
 }
