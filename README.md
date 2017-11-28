@@ -1,4 +1,4 @@
-# dgraph
+# Daggraph
 > A dagger dependency graph generator
 
 <p align="center">

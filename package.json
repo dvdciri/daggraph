@@ -1,5 +1,5 @@
 {
-  "name": "dgraph",
+  "name": "daggraph",
   "version": "0.0.0",
   "description": "A dagger dependency graph generator",
   "author": {
@@ -13,7 +13,7 @@
     "test": "xo"
   },
   "bin": {
-    "dgraph": "cli.js"
+    "daggraph": "cli.js"
   },
   "main": "cli.js",
   "keywords": [],
@@ -33,11 +33,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cesarferreira/dgraph.git"
+    "url": "https://github.com/dvdciri/daggraph.git"
   },
   "bugs": {
-    "url": "https://github.com/cesarferreira/dgraph/issues"
+    "url": "https://github.com/dvdciri/daggraph/issues"
   },
-  "homepage": "https://github.com/cesarferreira/dgraph#readme",
+  "homepage": "https://github.com/dvdciri/daggraph",
   "license": "MIT"
 }

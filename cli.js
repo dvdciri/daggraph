@@ -11,18 +11,18 @@ updateNotifier({ pkg }).notify();
 const cli = meow(`
 Usage
 
-   $ dgraph <command> <params>
+   $ daggraph <command> <params>
 
-   $ dgraph sample <param>             # Uses the <PARAM>
-   $ dgraph other <param>              # Other the <PARAM>
-   $ dgraph another <param>            # Another the <PARAM>
+   $ daggraph sample <param>             # Uses the <PARAM>
+   $ daggraph other <param>              # Other the <PARAM>
+   $ daggraph another <param>            # Another the <PARAM>
    
  Examples
 
-   $ dgraph sample TEST                # Uses the TEST
-   $ dgraph sample YOLO                # Uses the YOLO
-   $ dgraph other YOLO                 # Uses the YOLO
-   $ dgraph another YOLO               # Uses the YOLO
+   $ daggraph sample TEST                # Uses the TEST
+   $ daggraph sample YOLO                # Uses the YOLO
+   $ daggraph other YOLO                 # Uses the YOLO
+   $ daggraph another YOLO               # Uses the YOLO
 `,
   {
     alias: {
