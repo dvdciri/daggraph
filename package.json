@@ -8,9 +8,7 @@
     "url": "https://github.com/dvdciri"
   },
   "scripts": {
-    "start": "node index.js",
-    "lint": "eslint src/**/*",
-    "test": "xo"
+    "start": "node cli.js"
   },
   "bin": {
     "daggraph": "cli.js"

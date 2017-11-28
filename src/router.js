@@ -20,6 +20,8 @@ const self = module.exports = {
       process.exit(2);
     }
 
+    log(input[0]);
+
     // Find all modules inside the given project root path
     const searchCriteria = FileHound.create()
       .paths('./')
