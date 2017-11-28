@@ -16,7 +16,7 @@ const DComponent = require('./models/DComponent.js');
 
 // Main code //
 const self = module.exports = {
-	init: (input, flags) => {
+  init: (input, flags) => {
 
     var rootPath = './';
 
@@ -42,26 +42,26 @@ const self = module.exports = {
       // .discard("*build/*")		
       .depth(20)
       .ignoreHiddenDirectories()
-      .ignoreHiddenFiles()		
+      .ignoreHiddenFiles()
       .ext('java');
-    
+
     loadAllModules(searchCriteria)
-    .then(m => loadAllInjections(searchCriteria, m))
-    .then(m => loadAllComponents(searchCriteria, m))
-    .then(c =>{
-      // TODO: Display graph
-      log(JSON.stringify(c, null, 2));
-    });
+      .then(m => loadAllInjections(searchCriteria, m))
+      .then(m => loadAllComponents(searchCriteria, m))
+      .then(c => {
+        // TODO: Display graph
+        log(JSON.stringify(c, null, 2));
+      });
   }
 };
 
 /**
  * Scan the files using the SEARCH_CRITERIA looking for content == @Module and return a list of DModule
  */
-function loadAllModules(searchCriteria){
+function loadAllModules(searchCriteria) {
   return new Promise((resolve, reject) => {
     log("Loading modules..");
-    
+
     var daggerModules = [];
 
     const moduleSniffer = FileSniffer.create(searchCriteria);
@@ -85,12 +85,12 @@ function loadAllModules(searchCriteria){
 /**
  * Scan the files using the SEARCH_CRITERIA looking for content == @Component and return a list of DComponent
  */
-function loadAllComponents(searchCriteria, allModules){
+function loadAllComponents(searchCriteria, allModules) {
   return new Promise((resolve, reject) => {
     log("Loading components..");
-    
+
     var daggerComponents = [];
-    
+
     const componentSniffer = FileSniffer.create(searchCriteria);
     componentSniffer.on('match', (path) => {
       // Create and add the component to the list
@@ -99,7 +99,7 @@ function loadAllComponents(searchCriteria, allModules){
       daggerComponents.push(component);
     });
     componentSniffer.on('end', (filenames) => {
-      log('Found ' + filenames.length + ' dagger components');      
+      log('Found ' + filenames.length + ' dagger components');
       resolve(daggerComponents);
     });
     componentSniffer.on('error', (filename) => {
@@ -109,33 +109,36 @@ function loadAllComponents(searchCriteria, allModules){
   });
 }
 
-function loadAllInjections(searchCriteria, allModules){
-  return new Promise((resolve, reject) => {
-    log("Loading injections..");
-    
-    allModules.forEach(module => {
-      module.providedDependencies.forEach(dep => {
-        // Create a regex that matches the injection of that dependency
-        var regularity = new Regularity();
-        var regex = regularity
-        .then("@Inject")
-        .oneOf("\n", "space")
-        .oneOf("protected", "public")
-        .then("space")
-        .then(dep.name)
-        .multiline()
-        .done();
-        
-        const injectionSniffer = FileSniffer.create(searchCriteria);
-        injectionSniffer.on('match', (path) => {
-          var fileName = Utils.getFilenameFromPath(path);
-          dep.addUsageClass(fileName);
-        });
-        injectionSniffer.find(regex.toString());
-      });
-    });
+function loadAllInjections(searchCriteria, allModules) {
+  log("Loading injections..");
 
-    // TODO: This is wrong, it's async
-    return allModules;
-  });
+  return Promise.all(
+    allModules.map(module =>
+      Promise.all(
+        module.providedDependencies.map(
+          (dep) => new Promise((resolve, reject) => {
+            // Create a regex that matches the injection of that dependency
+            var regularity = new Regularity();
+            var regex = regularity
+              .then("@Inject")
+              .oneOf("\n", "space")
+              .oneOf("protected", "public")
+              .then("space")
+              .then(dep.name)
+              .multiline()
+              .done();
+
+            const injectionSniffer = FileSniffer.create(searchCriteria);
+            injectionSniffer.on('match', (path) => {
+              var fileName = Utils.getFilenameFromPath(path);
+              dep.addUsageClass(fileName);
+            });
+            injectionSniffer.on('end', () => resolve());
+            injectionSniffer.on('error', reject);
+            injectionSniffer.find(regex.toString());
+          })
+        )
+      )
+    )
+  ).then(() => allModules);
 }
