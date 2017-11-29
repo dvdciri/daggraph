@@ -2,7 +2,7 @@
 'use strict';
 
 const meow = require('meow');
-const router = require('./src/router_v2');
+const router = require('./src/router');
 const updateNotifier = require('update-notifier');
 const pkg = require('./package.json');
 
