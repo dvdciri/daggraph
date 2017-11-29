@@ -27,11 +27,10 @@ const self = module.exports = {
         process.exit(2);
       } else {
         rootPath = input[0];
-        log('Using custom path ' + rootPath)
       }
     }
 
-    if (!isGradleFolder()) {
+    if (!isGradleFolder(rootPath)) {
       log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
@@ -48,7 +47,8 @@ const self = module.exports = {
     .then((modules) => loadComponents(modules, searchCriteria))
     .then(compoents => {
       // TODO: Display stuff now
-      console.log(JSON.stringify(compoents, null, 2));
+
+      writeContentToFile(JSON.stringify(compoents, null, 2));
     });
   }
 };
@@ -89,7 +89,13 @@ function loadComponents(modules, searchCriteria){
   });
 }
 
-
-function isGradleFolder(){
+function isGradleFolder(rootPath){
   return fs.existsSync(rootPath + 'build.gradle');
+}
+
+function writeContentToFile(content){
+  const fileName = "dependencyGraph.json";
+  fs.writeFile(fileName, content, function(err) {
+    console.log("The graph was saved in "+ process.cwd() + "/"+fileName);
+}); 
 }
