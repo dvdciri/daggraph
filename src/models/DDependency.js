@@ -1,10 +1,10 @@
 function DDependency(n){
     this.name = n;
-    this.usages = [];
+    this.dependencies = [];
 }
 
-DDependency.prototype.addUsageClass = function (usageClassName) {
-    this.usages.push(usageClassName);
+DDependency.prototype.addDependency = function (dependency) {
+    this.dependencies.push(dependency);
 }
 
 module.exports = DDependency;

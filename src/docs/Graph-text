@@ -15,5 +15,5 @@ Dependency{
 	Class name,
 	Annotation scope, <- missing
 	Class[] usages, <- missing
-	Dependency[] dependency <- missing
+	Dependency[] dependency
 }

@@ -113,32 +113,35 @@ function loadAllInjections(searchCriteria, allModules) {
   log("Loading injections..");
 
   return Promise.all(
-    allModules.map(module =>
+    allModules.filter((module, index) => index < 1).map(module =>
       Promise.all(
         module.providedDependencies.map(
           (dep) => new Promise((resolve, reject) => {
-            // Create a regex that matches the injection of that dependency
-            var regularity = new Regularity();
-            var regex = regularity
-              .then("@Inject")
-              .oneOf("\n", "space")
-              .oneOf("protected", "public")
-              .then("space")
-              .then(dep.name)
-              .multiline()
-              .done();
+            log("Searching for "+ dep.name);
 
             const injectionSniffer = FileSniffer.create(searchCriteria);
             injectionSniffer.on('match', (path) => {
-              var fileName = Utils.getFilenameFromPath(path);
+              log("Found injection in " + path + " for depepdency " + dep.name);
+              const fileName = Utils.getFilenameFromPath(path);
               dep.addUsageClass(fileName);
             });
-            injectionSniffer.on('end', () => resolve());
-            injectionSniffer.on('error', reject);
-            injectionSniffer.find(regex.toString());
+            injectionSniffer.on('end', (path) => {
+              log("Ending " + path);
+              resolve();
+            });
+            injectionSniffer.on('error', (msg) => {
+              log("Erroring " + msg);
+              reject();
+            });
+
+            // Create a regex that matches the injection of that dependency
+            const regex = new RegExp('@Inject\\s*(?:protected|public)\\s*' + dep.name)
+            log(regex.toString());
+            injectionSniffer.find(regex);
           })
         )
       )
     )
-  ).then(() => allModules);
+  ).then(() => allModules)
+  .catch(console.error);
 }
