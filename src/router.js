@@ -31,117 +31,65 @@ const self = module.exports = {
       }
     }
 
-    if (!fs.existsSync(rootPath + 'build.gradle')) {
+    if (!isGradleFolder()) {
       log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
-    // Find all modules inside the given project root path
     const searchCriteria = FileHound.create()
       .paths(rootPath)
-      // .discard("*build/*")		
+      .discard("build")		
       .depth(20)
       .ignoreHiddenDirectories()
       .ignoreHiddenFiles()
       .ext('java');
 
-    loadAllModules(searchCriteria)
-      .then(m => loadAllInjections(searchCriteria, m))
-      .then(m => loadAllComponents(searchCriteria, m))
-      .then(c => {
-        // TODO: Display graph
-        log(JSON.stringify(c, null, 2));
-      });
+    loadModules(searchCriteria)
+    .then((modules) => loadComponents(modules, searchCriteria))
+    .then(compoents => {
+      // TODO: Display stuff now
+      console.log(JSON.stringify(compoents, null, 2));
+    });
   }
 };
 
-/**
- * Scan the files using the SEARCH_CRITERIA looking for content == @Module and return a list of DModule
- */
-function loadAllModules(searchCriteria) {
+function loadModules(searchCriteria){
   return new Promise((resolve, reject) => {
-    log("Loading modules..");
+    log("Loading dagger modules..");
 
-    var daggerModules = [];
+    const daggerModules = [];
+    const fileSniffer = FileSniffer.create(searchCriteria);
 
-    const moduleSniffer = FileSniffer.create(searchCriteria);
-    moduleSniffer.on('match', (path) => {
-      // Create and add the module to the list
+    fileSniffer.on("match", (path) => {
       var module = new DModule();
       module.init(path);
       daggerModules.push(module);
     });
-    moduleSniffer.on('end', (filenames) => {
-      log('Found ' + filenames.length + ' dagger modules');
-      resolve(daggerModules);
-    });
-    moduleSniffer.on('error', (filename) => {
-      reject("Error during searching for module in filename " + filename);
-    });
-    moduleSniffer.find('@Module');
+    fileSniffer.on("end", (files) => resolve(daggerModules));
+    fileSniffer.on("error", reject);
+    fileSniffer.find("@Module");
   });
 }
 
-/**
- * Scan the files using the SEARCH_CRITERIA looking for content == @Component and return a list of DComponent
- */
-function loadAllComponents(searchCriteria, allModules) {
+function loadComponents(modules, searchCriteria){
   return new Promise((resolve, reject) => {
-    log("Loading components..");
+    log("Loading dagger components..");
 
-    var daggerComponents = [];
+    const  daggerComponents = [];
+    const fileSniffer = FileSniffer.create(searchCriteria);
 
-    const componentSniffer = FileSniffer.create(searchCriteria);
-    componentSniffer.on('match', (path) => {
-      // Create and add the component to the list
+    fileSniffer.on('match', (path) => {
       const component = new DComponent();
-      component.init(path, allModules);
+      component.init(path, modules);
       daggerComponents.push(component);
     });
-    componentSniffer.on('end', (filenames) => {
-      log('Found ' + filenames.length + ' dagger components');
-      resolve(daggerComponents);
-    });
-    componentSniffer.on('error', (filename) => {
-      reject("Error during searching for component in filename " + filename);
-    });
-    componentSniffer.find('@Component');
+    fileSniffer.on("end", (files) => resolve(daggerComponents));
+    fileSniffer.on("error", reject);
+    fileSniffer.find("@Component");
   });
 }
 
-function loadAllInjections(searchCriteria, allModules) {
-  log("Loading injections..");
 
-  return Promise.all(
-    allModules.filter((module, index) => index < 1).map(module =>
-      Promise.all(
-        module.providedDependencies.map(
-          (dep) => new Promise((resolve, reject) => {
-            log("Searching for "+ dep.name);
-
-            const injectionSniffer = FileSniffer.create(searchCriteria);
-            injectionSniffer.on('match', (path) => {
-              log("Found injection in " + path + " for depepdency " + dep.name);
-              const fileName = Utils.getFilenameFromPath(path);
-              dep.addUsageClass(fileName);
-            });
-            injectionSniffer.on('end', (path) => {
-              log("Ending " + path);
-              resolve();
-            });
-            injectionSniffer.on('error', (msg) => {
-              log("Erroring " + msg);
-              reject();
-            });
-
-            // Create a regex that matches the injection of that dependency
-            const regex = new RegExp('@Inject\\s*(?:protected|public)\\s*' + dep.name)
-            log(regex.toString());
-            injectionSniffer.find(regex);
-          })
-        )
-      )
-    )
-  ).then(() => allModules)
-  .catch(console.error);
+function isGradleFolder(){
+  return fs.existsSync(rootPath + 'build.gradle');
 }
