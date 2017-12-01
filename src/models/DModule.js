@@ -15,26 +15,30 @@ DModule.prototype.init = function(filePath){
 };
 
 function getProvidedDependencies(path){
-    const file = FS.readFileSync(path, 'utf8');
+    let file = FS.readFileSync(path, 'utf8');
   
     // Match all the dependencies of the module using a regex
-    const fullDependencyRegex =  /@\w+\s *(?:protected|public)?\s*(\w+(?:\.\w+)*)\s*provide\w+\s*\(([^\)]*)\)/g;
-    const paramRegex = /\s*(\w+)\s*\w+\s*,?\s*/g;
+    const fullDependencyRegex = /@\w+\s*(?:protected|public)?\s*(\w+(?:\.\w+)*)\s*provide\w+\s*\(([^\)]*)\)/;    
+    const paramRegex = /\s*(\w+)\s*\w+\s*,?\s*/;
 
     const matches = file.match(fullDependencyRegex);
     if(matches == null) return [];
  
     // TODO: Get the visibility of each dependency
     const deps = [];
-    matches.forEach(element => {
-        const moduleDep = new DDependency(element.replace(fullDependencyRegex, "$1"));
-
-        // Get depepdencies of module dependency
-        while ((array = paramRegex.exec(element)) !== null) {
-            moduleDep.addDependency(new DDependency(array[1]));
+    while ((fullMatch = fullDependencyRegex.exec(file)) !== null) {
+        // Get dependency name
+        file = file.replace(fullDependencyRegex, "");
+        const moduleDep = new DDependency(fullMatch[1]);
+        let params = fullMatch[2];
+    
+        // Get sub-depepndencies
+        while ((paramMatch = paramRegex.exec(params)) !== null) {
+            params = params.replace(paramRegex, "");
+            moduleDep.addDependency(new DDependency(paramMatch[1]));
         }
         deps.push(moduleDep);
-    });
+    }
 
     return deps;
 }
