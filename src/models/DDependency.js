@@ -1,9 +1,9 @@
 function DDependency(n){
     this.name = n;
-    this.dependencies = [];
 }
 
 DDependency.prototype.addDependency = function (dependency) {
+    if(!this.dependencies) this.dependencies = [];
     this.dependencies.push(dependency);
 }
 

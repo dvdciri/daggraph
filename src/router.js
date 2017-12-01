@@ -85,7 +85,7 @@ function loadComponents(modules, searchCriteria){
     });
     fileSniffer.on("end", (files) => resolve(daggerComponents));
     fileSniffer.on("error", reject);
-    fileSniffer.find("@Component");
+    fileSniffer.find(/@Component|@Subcomponent/);
   });
 }
 
