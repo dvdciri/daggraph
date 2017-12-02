@@ -1,12 +1,11 @@
 #!/usr/bin/env node
 'use strict';
-
 const Chalk = require('chalk');
-const log = console.log;
 const path = require('path');
 const Regularity = require('regularity');
 const Utils = require('./utils/utils');
 const fs = require('fs');
+const GraphMapper = require('./graph/GraphMapper')
 // Files
 const FileHound = require('filehound');
 const FileSniffer = require('filesniffer');
@@ -23,7 +22,7 @@ const self = module.exports = {
     // Check for specified path and validate
     if (input[0] !== undefined) {
       if (!fs.lstatSync(input[0]).isDirectory()) {
-        log(Chalk.red('Path is not a directory'));
+        console.log(Chalk.red('Path is not a directory'));
         process.exit(2);
       } else {
         rootPath = input[0];
@@ -31,7 +30,7 @@ const self = module.exports = {
     }
 
     if (!isGradleFolder(rootPath)) {
-      log(Chalk.red(`This is not a gradle folder`));
+      console.log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
@@ -45,17 +44,24 @@ const self = module.exports = {
 
     loadModules(searchCriteria)
     .then((modules) => loadComponents(modules, searchCriteria))
-    .then(compoents => {
-      // TODO: Display stuff now
-
-      writeContentToFile(JSON.stringify(compoents, null, 2));
-    });
+    .then(compoents => GraphMapper.toBubbleGraph(compoents))
+    .then(bubbleGraph => saveBubbleGraph(bubbleGraph));
   }
 };
 
+function saveBubbleGraph(bubbleGraph){
+  var file_path = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
+  const index_content = fs.readFileSync(file_path, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(bubbleGraph, null, 2));
+
+  const output_path = path.join('build', 'output', 'dependency_graph.html');
+  fs.writeFile(output_path, index_content, function(err) {
+    console.log("The graph was saved in "+ process.cwd() +'/'+ output_path);
+  }); 
+}
+
 function loadModules(searchCriteria){
   return new Promise((resolve, reject) => {
-    log("Loading dagger modules..");
+    console.log("Loading modules");
 
     const daggerModules = [];
     const fileSniffer = FileSniffer.create(searchCriteria);
@@ -73,7 +79,7 @@ function loadModules(searchCriteria){
 
 function loadComponents(modules, searchCriteria){
   return new Promise((resolve, reject) => {
-    log("Loading dagger components..");
+    console.log("Loading components");
 
     const  daggerComponents = [];
     const fileSniffer = FileSniffer.create(searchCriteria);
@@ -91,11 +97,4 @@ function loadComponents(modules, searchCriteria){
 
 function isGradleFolder(rootPath){
   return fs.existsSync(rootPath + 'build.gradle');
-}
-
-function writeContentToFile(content){
-  const fileName = "dependencyGraph.json";
-  fs.writeFile(fileName, content, function(err) {
-    console.log("The graph was saved in "+ process.cwd() + "/"+fileName);
-}); 
 }
