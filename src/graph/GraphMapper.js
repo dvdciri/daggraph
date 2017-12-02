@@ -8,8 +8,8 @@ const Bubble = require('./bubble/Bubble')
  * Converts some components into a Bubble graph structure
  */
 function toBubbleGraph(components){
-    console.log('Creating bubble graph');
-    
+    console.log('\nGenerating bubble graph..')
+
     return new Promise((resolve, reject) => {
         const mainBubble = new Bubble("Dependencies");
 

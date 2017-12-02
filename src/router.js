@@ -53,15 +53,15 @@ function saveBubbleGraph(bubbleGraph){
   var file_path = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
   const index_content = fs.readFileSync(file_path, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(bubbleGraph, null, 2));
 
-  const output_path = path.join('build', 'output', 'dependency_graph.html');
+  const output_path = path.join('build', 'dependency_graph.html');
   fs.writeFile(output_path, index_content, function(err) {
-    console.log("The graph was saved in "+ process.cwd() +'/'+ output_path);
+    console.log("\nAll done! The graph was saved in "+ process.cwd() +'/'+ output_path);
   }); 
 }
 
 function loadModules(searchCriteria){
   return new Promise((resolve, reject) => {
-    console.log("Loading modules");
+    console.log("\nLoading modules..");
 
     const daggerModules = [];
     const fileSniffer = FileSniffer.create(searchCriteria);
@@ -79,7 +79,7 @@ function loadModules(searchCriteria){
 
 function loadComponents(modules, searchCriteria){
   return new Promise((resolve, reject) => {
-    console.log("Loading components");
+    console.log("\nLoading components..");
 
     const  daggerComponents = [];
     const fileSniffer = FileSniffer.create(searchCriteria);
