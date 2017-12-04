@@ -10,36 +10,33 @@ const Bubble = require('./bubble/Bubble')
 function toBubbleGraph(components){
     console.log('\nGenerating bubble graph..')
 
-    return new Promise((resolve, reject) => {
-        const mainBubble = new Bubble("Dependencies");
+    const mainBubble = new Bubble("Dependencies");
 
-        components.map((component) => {
-            const componentBubble = new Bubble(component.name);
+    components.map((component) => {
+        const componentBubble = new Bubble(component.name);
 
-            component.modules.map((module) => {
-                const moduleBubble = new Bubble(module.name);
+        component.modules.map((module) => {
+            const moduleBubble = new Bubble(module.name);
 
-                module.dependencies.map((dependency) => {
-                    const dependencyBubble = new Bubble(dependency.name);
+            module.dependencies.map((dependency) => {
+                const dependencyBubble = new Bubble(dependency.name);
 
-                    // Set size in relation of the dependencies needed for that dependency
-                    let bubbleSize = 1;
-                    if (dependency.dependencies){
-                        bubbleSize += dependency.dependencies.length;
-                    }
-                    dependencyBubble.setSize(bubbleSize);
+                // Set size in relation of the dependencies needed for that dependency
+                let bubbleSize = 1;
+                if (dependency.dependencies){
+                    bubbleSize += dependency.dependencies.length;
+                }
+                dependencyBubble.setSize(bubbleSize);
 
-                    moduleBubble.addChildren(dependencyBubble);
-                });
-
-                componentBubble.addChildren(moduleBubble);
+                moduleBubble.addChildren(dependencyBubble);
             });
 
-            mainBubble.addChildren(componentBubble);
+            componentBubble.addChildren(moduleBubble);
         });
 
-        resolve(mainBubble);
+        mainBubble.addChildren(componentBubble);
     });
+    return mainBubble;
 }
 
 exports.toBubbleGraph = toBubbleGraph;

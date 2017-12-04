@@ -21,7 +21,10 @@
     "filesniffer": "0.0.2",
     "meow": "^3.7.0",
     "node-time-log": "^1.0.3",
+    "open": "0.0.5",
+    "opn": "^5.1.0",
     "regularity": "^0.5.1",
+    "sleep": "^5.1.1",
     "string-search": "^1.2.0",
     "update-notifier": "^2.3.0"
   },

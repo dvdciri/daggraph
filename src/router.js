@@ -2,16 +2,14 @@
 'use strict';
 const Chalk = require('chalk');
 const path = require('path');
-const Regularity = require('regularity');
-const Utils = require('./utils/utils');
 const fs = require('fs');
-const GraphMapper = require('./graph/GraphMapper')
-// Files
-const FileHound = require('filehound');
-const FileSniffer = require('filesniffer');
-// Models
-const DModule = require('./models/DModule.js');
-const DComponent = require('./models/DComponent.js');
+var Inquirer = require("inquirer");
+var sleep = require('sleep');
+const DAGGER_ANALYZER = require('./DaggerAnalyzer');
+const GRAPH_MAPPER = require('./graph/GraphMapper')
+var EXEC = require('child_process').execSync;
+
+
 
 // Main code //
 const self = module.exports = {
@@ -29,70 +27,54 @@ const self = module.exports = {
       }
     }
 
+    // If is not a gradle folder, stop
     if (!isGradleFolder(rootPath)) {
       console.log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
-    const searchCriteria = FileHound.create()
-      .paths(rootPath)
-      .discard("build")		
-      .depth(20)
-      .ignoreHiddenDirectories()
-      .ignoreHiddenFiles()
-      .ext('java');
+    // Scan the folder structure and get the dagger components
+    DAGGER_ANALYZER.getComponents(rootPath)
+    .then(components => {
 
-    loadModules(searchCriteria)
-    .then((modules) => loadComponents(modules, searchCriteria))
-    .then(compoents => GraphMapper.toBubbleGraph(compoents))
-    .then(bubbleGraph => saveBubbleGraph(bubbleGraph));
+      const chartQuestions = [{
+        type: "list",
+        name: "chart",
+        message: "What kind of chart do you want to generate?",
+        choices: [
+          "Bubble chart"
+        ]
+      }];
+
+      console.log('\n');
+      Inquirer.prompt(chartQuestions)
+      .then((answers) =>{
+
+        let fileContent;
+        let placeholderPath;
+        let fileName;
+        if(answers.chart === 'Bubble chart'){
+          fileContent = GRAPH_MAPPER.toBubbleGraph(components);
+          placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
+          fileName = 'dependency_bubble_graph.html';
+        }
+
+        createFileAndSave(placeholderPath, fileContent, fileName);
+      });
+    });
   }
 };
 
-function saveBubbleGraph(bubbleGraph){
-  var file_path = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
-  const index_content = fs.readFileSync(file_path, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(bubbleGraph, null, 2));
-
-  const output_path = path.join('build', 'dependency_graph.html');
+function createFileAndSave(placeholderPath, fileContent, fileName){
+  const index_content = fs.readFileSync(placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(fileContent, null, 2));
+  const output_path = path.join('build', fileName);
+  const absFilePath = path.join(process.cwd(), output_path);
   fs.writeFile(output_path, index_content, function(err) {
-    console.log("\nAll done! The graph was saved in "+ process.cwd() +'/'+ output_path);
+    console.log("\nAll done! The chart was saved in "+ absFilePath);
+    console.log('Opening...')
+    sleep.sleep(2);
+    EXEC('open ' + absFilePath)
   }); 
-}
-
-function loadModules(searchCriteria){
-  return new Promise((resolve, reject) => {
-    console.log("\nLoading modules..");
-
-    const daggerModules = [];
-    const fileSniffer = FileSniffer.create(searchCriteria);
-
-    fileSniffer.on("match", (path) => {
-      var module = new DModule();
-      module.init(path);
-      daggerModules.push(module);
-    });
-    fileSniffer.on("end", (files) => resolve(daggerModules));
-    fileSniffer.on("error", reject);
-    fileSniffer.find("@Module");
-  });
-}
-
-function loadComponents(modules, searchCriteria){
-  return new Promise((resolve, reject) => {
-    console.log("\nLoading components..");
-
-    const  daggerComponents = [];
-    const fileSniffer = FileSniffer.create(searchCriteria);
-
-    fileSniffer.on('match', (path) => {
-      const component = new DComponent();
-      component.init(path, modules);
-      daggerComponents.push(component);
-    });
-    fileSniffer.on("end", (files) => resolve(daggerComponents));
-    fileSniffer.on("error", reject);
-    fileSniffer.find(/@Component|@Subcomponent/);
-  });
 }
 
 function isGradleFolder(rootPath){
