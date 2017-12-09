@@ -7,4 +7,9 @@ DDependency.prototype.addDependency = function (dependency) {
     this.dependencies.push(dependency);
 }
 
+DDependency.prototype.addInjectionPath = function (injectionPath) {
+    if(!this.injectionPaths) this.injectionPaths = [];
+    this.injectionPaths.push(injectionPath);
+}
+
 module.exports = DDependency;
