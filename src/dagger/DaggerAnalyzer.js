@@ -3,8 +3,8 @@ const FILE_HOUND = require('filehound');
 const FILE_SNIFFER = require('filesniffer');
 const FS = require('fs');
 // Models
-const DModule = require('./../models/DModule.js');
-const DComponent = require('./../models/DComponent.js');
+const DModule = require('./models/DModule.js');
+const DComponent = require('./models/DComponent.js');
 
 /**
  * Find and load the dagger components and modules

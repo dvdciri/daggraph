@@ -1,7 +1,7 @@
 const FS = require('fs');
 const Regularity = require('regularity');
 const DDependency = require('./DDependency.js');
-const Utils = require('./../utils/utils');
+const Utils = require('./../../utils/utils');
 
 function DModule(){
     this.dependencies = [];

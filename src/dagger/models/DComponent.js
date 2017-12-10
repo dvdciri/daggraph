@@ -1,6 +1,6 @@
 const FS = require('fs');
 const Regularity = require('regularity');
-const Utils = require('./../utils/utils');
+const Utils = require('./../../utils/utils');
 
 function DComponent(){
     this.modules = [];

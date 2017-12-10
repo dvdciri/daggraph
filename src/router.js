@@ -42,7 +42,8 @@ const self = module.exports = {
         name: "chart",
         message: "What kind of chart do you want to generate?",
         choices: [
-          "Bubble chart"
+          "Bubble chart",
+          "Tree chart"
         ]
       }];
 
@@ -53,11 +54,19 @@ const self = module.exports = {
         let fileContent;
         let placeholderPath;
         let fileName;
-        if(answers.chart === 'Bubble chart'){
-          fileContent = GRAPH_MAPPER.toBubbleGraph(components);
-          placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
-          fileName = 'dependency_bubble_graph.html';
-        }
+        
+        switch(answers.chart) {
+          case 'Bubble chart':
+              fileContent = GRAPH_MAPPER.toBubbleGraph(components);
+              placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
+              fileName = 'dependency_bubble_graph.html';
+              break;
+          case 'Tree chart':
+              fileContent = GRAPH_MAPPER.toTreeGraph(components);
+              placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
+              fileName = 'dependency_tree_graph.html';
+              break;
+      }
 
         createFileAndSave(placeholderPath, fileContent, fileName);
       });

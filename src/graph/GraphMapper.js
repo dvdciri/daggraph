@@ -2,10 +2,11 @@
  * Use this class to map any dagger component to any kind of graph that we support.
  */
 const Bubble = require('./bubble/Bubble')
+const TreeNode = require('./tree/TreeNode')
 
 
 /**
- * Converts some components into a Bubble graph structure
+ * Converts components into a Bubble graph structure
  */
 function toBubbleGraph(components){
     const mainBubble = new Bubble("Dependencies");
@@ -37,4 +38,30 @@ function toBubbleGraph(components){
     return mainBubble;
 }
 
+/**
+ * Converts components into a Tree graph structure
+ */
+function toTreeGraph(components){
+    const mainNode = new TreeNode("Dependencies");
+
+    components.map((component) => {
+        const componentNode = new TreeNode(component.name);
+
+        component.modules.map((module) => {
+            const moduleNode = new TreeNode(module.name);
+
+            module.dependencies.map((dependency) => {
+                const dependencyNode = new TreeNode(dependency.name);
+                moduleNode.addChildren(dependencyNode);
+            });
+
+            componentNode.addChildren(moduleNode);
+        });
+
+        mainNode.addChildren(componentNode);
+    });
+    return mainNode;
+}
+
 exports.toBubbleGraph = toBubbleGraph;
+exports.toTreeGraph = toTreeGraph;
