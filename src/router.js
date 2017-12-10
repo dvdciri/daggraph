@@ -9,6 +9,10 @@ const DAGGER_ANALYZER = require('./dagger/DaggerAnalyzer');
 const GRAPH_MAPPER = require('./graph/GraphMapper')
 var EXEC = require('child_process').execSync;
 
+// Chart types
+const BUBBLE_CHART = "Bubble chart";
+const TREE_CHART = "Tree chart";
+const LINKED_NODE_CHART = "Linked node chart";
 
 
 // Main code //
@@ -42,8 +46,9 @@ const self = module.exports = {
         name: "chart",
         message: "What kind of chart do you want to generate?",
         choices: [
-          "Bubble chart",
-          "Tree chart"
+          BUBBLE_CHART,
+          TREE_CHART,
+          LINKED_NODE_CHART
         ]
       }];
 
@@ -56,16 +61,21 @@ const self = module.exports = {
         let fileName;
         
         switch(answers.chart) {
-          case 'Bubble chart':
-              fileContent = GRAPH_MAPPER.toBubbleGraph(components);
-              placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
-              fileName = 'dependency_bubble_graph.html';
-              break;
-          case 'Tree chart':
-              fileContent = GRAPH_MAPPER.toTreeGraph(components);
-              placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
-              fileName = 'dependency_tree_graph.html';
-              break;
+          case BUBBLE_CHART:
+            fileContent = GRAPH_MAPPER.toBubbleGraph(components);
+            placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
+            fileName = 'dependency_bubble_graph.html';
+            break;
+          case TREE_CHART:
+            fileContent = GRAPH_MAPPER.toTreeGraph(components);
+            placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
+            fileName = 'dependency_tree_graph.html';
+            break;
+          case LINKED_NODE_CHART:
+            fileContent = GRAPH_MAPPER.toLinkedNodes(components);
+            placeholderPath = path.join(__dirname, 'graph', 'linked_nodes', 'placeholder_index.html');
+            fileName = 'dependency_linked_nodes_graph.html';
+            break;
       }
 
         createFileAndSave(placeholderPath, fileContent, fileName);

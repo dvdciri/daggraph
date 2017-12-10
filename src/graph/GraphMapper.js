@@ -3,6 +3,9 @@
  */
 const Bubble = require('./bubble/Bubble')
 const TreeNode = require('./tree/TreeNode')
+const Link = require('./linked_nodes/Link')
+const Node = require('./linked_nodes/Node')
+const LinkedNodes = require('./linked_nodes/LinkedNodes')
 
 
 /**
@@ -63,5 +66,49 @@ function toTreeGraph(components){
     return mainNode;
 }
 
+function toLinkedNodes(components) {
+    const linkedNodes = new LinkedNodes();
+    var componentGroup = 1;
+
+    components.forEach(component => {
+         // For each components add one node
+         const componentNode = new Node(component.name);
+         componentNode.setGroup(componentGroup);
+         linkedNodes.addNode(componentNode);
+ 
+         // For each module add one node and one link to the component
+         component.modules.forEach(module => {
+            // Add the module node if is not already there
+            if (!linkedNodes.containsNodeWithId(module.name)){
+                const moduleNode = new Node(module.name);
+                moduleNode.setGroup(componentGroup);
+                linkedNodes.addNode(moduleNode);
+            }
+
+            // Create the component-module link (always)
+            const componentModuleLink = new Link(component.name, module.name);
+            linkedNodes.addLink(componentModuleLink);
+
+            // For each dependency add one node and one link to the module
+            module.dependencies.forEach(dep => {
+                // Add the module node if is not already there
+                if (!linkedNodes.containsNodeWithId(dep.name)){
+                    const depNode = new Node(dep.name);
+                    depNode.setGroup(componentGroup);
+                    linkedNodes.addNode(depNode);
+                }
+
+                // Create the module-dependency link
+                const moduleDepLink = new Link(module.name, dep.name);
+                linkedNodes.addLink(moduleDepLink);
+            });
+         });
+
+         componentGroup++;
+    }); 
+    return linkedNodes;
+}
+
 exports.toBubbleGraph = toBubbleGraph;
 exports.toTreeGraph = toTreeGraph;
+exports.toLinkedNodes = toLinkedNodes;
