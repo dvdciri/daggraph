@@ -20,7 +20,7 @@ function findComponents(projectRootPath){
         .depth(20)
         .ignoreHiddenDirectories()
         .ignoreHiddenFiles()
-        .ext('java');
+        .ext(['.java', '.kt']);
     
         searchModules(searchCriteria)
         .then(modules => findAndAddInjections(modules, searchCriteria))
