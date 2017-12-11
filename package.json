@@ -7,7 +7,10 @@
     "email": "dvd.ciri@gmail.com",
     "url": "https://github.com/dvdciri"
   },
-  "scripts": {},
+  "scripts": {
+    "start": "node cli.js",
+    "test": "node test.js"
+  },  
   "bin": {
     "daggraph": "cli.js"
   },
