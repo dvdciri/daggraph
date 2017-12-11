@@ -69,11 +69,7 @@ var node = svg.append("g")
 .data(graph.nodes)
 .enter().append("circle")
     .attr("r", 5)
-    .attr("fill", function(d) { return color(d.group); })
-    .call(d3.drag()
-        .on("start", dragstarted)
-        .on("drag", dragged)
-        .on("end", dragended));
+    .attr("fill", function(d) { return color(d.group); });
 
 node.append("title")
     .text(function(d) { return d.id; });
