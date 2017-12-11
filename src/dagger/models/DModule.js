@@ -1,7 +1,7 @@
 const FS = require('fs');
 const Regularity = require('regularity');
 const DDependency = require('./DDependency.js');
-const Utils = require('./../utils/utils');
+const Utils = require('./../../utils/utils');
 
 function DModule(){
     this.dependencies = [];
@@ -20,11 +20,7 @@ function getProvidedDependencies(path){
     // Match all the dependencies of the module using a regex
     const fullDependencyRegex = /@\w+\s*(?:protected|public)?\s*(\w+(?:\.\w+)*)\s*provide\w+\s*\(([^\)]*)\)/;    
     const paramRegex = /\s*(\w+)\s*\w+\s*,?\s*/;
-
-    const matches = file.match(fullDependencyRegex);
-    if(matches == null) return [];
  
-    // TODO: Get the visibility of each dependency
     const deps = [];
     while ((fullMatch = fullDependencyRegex.exec(file)) !== null) {
         // Get dependency name

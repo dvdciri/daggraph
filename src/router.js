@@ -1,18 +1,19 @@
 #!/usr/bin/env node
 'use strict';
-
 const Chalk = require('chalk');
-const log = console.log;
 const path = require('path');
-const Regularity = require('regularity');
-const Utils = require('./utils/utils');
 const fs = require('fs');
-// Files
-const FileHound = require('filehound');
-const FileSniffer = require('filesniffer');
-// Models
-const DModule = require('./models/DModule.js');
-const DComponent = require('./models/DComponent.js');
+var Inquirer = require("inquirer");
+var sleep = require('sleep');
+const DAGGER_ANALYZER = require('./dagger/DaggerAnalyzer');
+const GRAPH_MAPPER = require('./graph/GraphMapper')
+var EXEC = require('child_process').execSync;
+
+// Chart types
+const BUBBLE_CHART = "Bubble chart";
+const TREE_CHART = "Tree chart";
+const LINKED_NODE_CHART = "Linked node chart";
+
 
 // Main code //
 const self = module.exports = {
@@ -23,79 +24,77 @@ const self = module.exports = {
     // Check for specified path and validate
     if (input[0] !== undefined) {
       if (!fs.lstatSync(input[0]).isDirectory()) {
-        log(Chalk.red('Path is not a directory'));
+        console.log(Chalk.red('Path is not a directory'));
         process.exit(2);
       } else {
         rootPath = input[0];
       }
     }
 
+    // If is not a gradle folder, stop
     if (!isGradleFolder(rootPath)) {
-      log(Chalk.red(`This is not a gradle folder`));
+      console.log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
-    const searchCriteria = FileHound.create()
-      .paths(rootPath)
-      .discard("build")		
-      .depth(20)
-      .ignoreHiddenDirectories()
-      .ignoreHiddenFiles()
-      .ext('java');
+    // Scan the folder structure and get the dagger components
+    DAGGER_ANALYZER.findComponents(rootPath)
+    .then(components => {
 
-    loadModules(searchCriteria)
-    .then((modules) => loadComponents(modules, searchCriteria))
-    .then(compoents => {
-      // TODO: Display stuff now
+      const chartQuestions = [{
+        type: "list",
+        name: "chart",
+        message: "What kind of chart do you want to generate?",
+        choices: [
+          BUBBLE_CHART,
+          TREE_CHART,
+          LINKED_NODE_CHART
+        ]
+      }];
 
-      writeContentToFile(JSON.stringify(compoents, null, 2));
-    });
+      console.log('\n');
+      Inquirer.prompt(chartQuestions)
+      .then((answers) =>{
+
+        let fileContent;
+        let placeholderPath;
+        let fileName;
+        
+        switch(answers.chart) {
+          case BUBBLE_CHART:
+            fileContent = GRAPH_MAPPER.toBubbleGraph(components);
+            placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
+            fileName = 'dependency_bubble_graph.html';
+            break;
+          case TREE_CHART:
+            fileContent = GRAPH_MAPPER.toTreeGraph(components);
+            placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
+            fileName = 'dependency_tree_graph.html';
+            break;
+          case LINKED_NODE_CHART:
+            fileContent = GRAPH_MAPPER.toLinkedNodes(components);
+            placeholderPath = path.join(__dirname, 'graph', 'linked_nodes', 'placeholder_index.html');
+            fileName = 'dependency_linked_nodes_graph.html';
+            break;
+      }
+
+        createFileAndSave(placeholderPath, fileContent, fileName);
+      });
+    }).catch(msg => console.log(msg));
   }
 };
 
-function loadModules(searchCriteria){
-  return new Promise((resolve, reject) => {
-    log("Loading dagger modules..");
-
-    const daggerModules = [];
-    const fileSniffer = FileSniffer.create(searchCriteria);
-
-    fileSniffer.on("match", (path) => {
-      var module = new DModule();
-      module.init(path);
-      daggerModules.push(module);
-    });
-    fileSniffer.on("end", (files) => resolve(daggerModules));
-    fileSniffer.on("error", reject);
-    fileSniffer.find("@Module");
-  });
-}
-
-function loadComponents(modules, searchCriteria){
-  return new Promise((resolve, reject) => {
-    log("Loading dagger components..");
-
-    const  daggerComponents = [];
-    const fileSniffer = FileSniffer.create(searchCriteria);
-
-    fileSniffer.on('match', (path) => {
-      const component = new DComponent();
-      component.init(path, modules);
-      daggerComponents.push(component);
-    });
-    fileSniffer.on("end", (files) => resolve(daggerComponents));
-    fileSniffer.on("error", reject);
-    fileSniffer.find("@Component");
-  });
+function createFileAndSave(placeholderPath, fileContent, fileName){
+  const index_content = fs.readFileSync(placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(fileContent, null, 2));
+  const output_path = path.join('build', fileName);
+  const absFilePath = path.join(process.cwd(), output_path);
+  fs.writeFile(output_path, index_content, function(err) {
+    console.log("\nAll done! The chart was saved in "+ absFilePath + ". Opening..");
+    sleep.sleep(3);
+    EXEC('open ' + absFilePath)
+  }); 
 }
 
 function isGradleFolder(rootPath){
   return fs.existsSync(rootPath + 'build.gradle');
-}
-
-function writeContentToFile(content){
-  const fileName = "dependencyGraph.json";
-  fs.writeFile(fileName, content, function(err) {
-    console.log("The graph was saved in "+ process.cwd() + "/"+fileName);
-}); 
 }
