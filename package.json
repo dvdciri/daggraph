@@ -1,6 +1,6 @@
 {
   "name": "daggraph",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A dagger dependency graph generator",
   "author": {
     "name": "Davide Cirillo",
