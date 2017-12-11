@@ -20,10 +20,10 @@ Analyze a specific folder:
 
 Select which chart you want to generate:
 
-<d align="center">
-  <div style="display: in-line"><img width="30%" src="img/bubble_graph.png" /></div>
-  <div style="display: in-line"><img width="30%" src="img/tree_graph.png" /></div>
-  <div style="display: in-line"><img width="30%" src="img/linked_node_graph.png" /></div>
+<p align="center">
+  <img height="200" src="img/bubble_graph.png" />
+  <img height="200" src="img/tree_graph.png" />
+  <img height="200" src="img/linked_node_graph.png" />
 </p>
 
 ## Install
