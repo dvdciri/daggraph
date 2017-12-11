@@ -27,7 +27,6 @@ Select which chart you want to generate:
 </p>
 
 ## Install
-
 ```sh
 npm install -g daggraph
 ```
