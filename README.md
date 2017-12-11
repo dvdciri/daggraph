@@ -1,17 +1,34 @@
-# Daggraph
-> A dagger dependency graph generator
-
+<p align="center"><a href="https://github.com/dvdciri/daggraph" target="_blank"><img width="200"src="img/icon.png"></a></p>
+<h1 align="center">Daggraph</h1>
+<p align="center"><a href="http://square.github.io/dagger/" target="_blank">Dagger</a> dependency graph generator for Android Developers</p>
 <p align="center">
-  <img src="https://raw.githubusercontent.com/cesarferreira/assets/master/images/screenshot_terminal_hello_world.png" width="100%" />
+  <a href="https://www.npmjs.com/package/daggraph"><img src="https://img.shields.io/npm/dt/daggraph.svg" alt="npm"></a>
+  <a href="https://www.npmjs.com/package/daggraph"><img src="https://img.shields.io/npm/v/daggraph.svg" alt="npm"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
+</p>
+
+## Usage
+Analyze the current folder:
+> daggraph
+
+--------
+
+Analyze a specific folder:
+> daggraph `<folder_path>`
+
+Select which chart you want to generate:
+
+<d align="center">
+  <div style="display: in-line"><img width="30%" src="img/bubble_graph.png" /></div>
+  <div style="display: in-line"><img width="30%" src="img/tree_graph.png" /></div>
+  <div style="display: in-line"><img width="30%" src="img/linked_node_graph.png" /></div>
 </p>
 
 ## Install
 
-Coming soon..
-
-## Usage
-
-Coming soom..
+```sh
+npm install -g daggraph
+```
 
 ## Created by
 [Davide Cirillo](https://github.com/dvdciri)
