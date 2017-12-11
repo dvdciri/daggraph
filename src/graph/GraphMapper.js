@@ -69,6 +69,8 @@ function toTreeGraph(components){
 function toLinkedNodes(components) {
     const linkedNodes = new LinkedNodes();
     var componentGroup = 1;
+    var moduleGroup = 2;
+    var dependencyGroup = 3;
 
     components.forEach(component => {
          // For each components add one node
@@ -81,7 +83,7 @@ function toLinkedNodes(components) {
             // Add the module node if is not already there
             if (!linkedNodes.containsNodeWithId(module.name)){
                 const moduleNode = new Node(module.name);
-                moduleNode.setGroup(componentGroup);
+                moduleNode.setGroup(moduleGroup);
                 linkedNodes.addNode(moduleNode);
             }
 
@@ -94,7 +96,7 @@ function toLinkedNodes(components) {
                 // Add the module node if is not already there
                 if (!linkedNodes.containsNodeWithId(dep.name)){
                     const depNode = new Node(dep.name);
-                    depNode.setGroup(componentGroup);
+                    depNode.setGroup(dependencyGroup);
                     linkedNodes.addNode(depNode);
                 }
 
@@ -103,8 +105,6 @@ function toLinkedNodes(components) {
                 linkedNodes.addLink(moduleDepLink);
             });
          });
-
-         componentGroup++;
     }); 
     return linkedNodes;
 }

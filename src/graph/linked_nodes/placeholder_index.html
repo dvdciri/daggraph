@@ -1,18 +1,44 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-
 .links line {
   stroke: #999;
   stroke-opacity: 0.6;
 }
-
 .nodes circle {
   stroke: #fff;
   stroke-width: 1.5px;
 }
-
+.legend .component {
+    background-color: blue;
+}
+.legend .module {
+    background-color: lightblue;
+}
+.legend .dependency {
+    background-color: orangered;
+}
+.legend li{
+    float: left;
+    margin-right: 10px;
+}
+.legend {
+    list-style: none;
+}
+.legend span {
+    border: 1px solid #ccc;
+    float: left;
+    width: 12px;
+    height: 12px;
+    margin: 2px;
+}
 </style>
+
+<ul class="legend">
+    <li><span class="component"></span>Component</li>
+    <li><span class="module"></span>Module</li>
+    <li><span class="dependency"></span>Dependency</li>
+</ul>
 <svg width="1400" height="1400"></svg>
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
