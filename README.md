@@ -21,8 +21,8 @@ Analyze a specific folder:
 Select which chart you want to generate:
 
 <p align="center">
-  <img height="200" src="img/bubble_graph.png" />
-  <img height="200" src="img/tree_graph.png" />
+  <img height="200" src="img/bubble_graph.jpg" />
+  <img height="200" src="img/tree_graph.jpg" />
   <img height="200" src="img/linked_node_graph.png" />
 </p>
 
