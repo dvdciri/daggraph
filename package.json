@@ -7,9 +7,7 @@
     "email": "dvd.ciri@gmail.com",
     "url": "https://github.com/dvdciri"
   },
-  "scripts": {
-    
-  },
+  "scripts": {},
   "bin": {
     "daggraph": "cli.js"
   },
@@ -19,6 +17,7 @@
     "chalk": "^2.3.0",
     "filehound": "^1.16.2",
     "filesniffer": "0.0.2",
+    "inquirer": "^4.0.1",
     "meow": "^3.7.0",
     "node-time-log": "^1.0.3",
     "open": "0.0.5",
