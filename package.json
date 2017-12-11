@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node cli.js",
-    "test": "node test.js"
+    "test": "ava --timeout=2m"
   },
   "bin": {
     "daggraph": "cli.js"
@@ -25,11 +25,11 @@
     "node-time-log": "^1.0.3",
     "open": "0.0.5",
     "opn": "^5.1.0",
-    "regularity": "^0.5.1",
     "string-search": "^1.2.0",
     "update-notifier": "^2.3.0"
   },
   "devDependencies": {
+    "ava": "^0.24.0",
     "eslint": "^4.12.0",
     "xo": "^0.18.2"
   },

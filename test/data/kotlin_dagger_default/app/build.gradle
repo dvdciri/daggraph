@@ -1,0 +1,66 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+
+    defaultConfig {
+        applicationId "org.loop.example"
+        minSdkVersion 16
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dexOptions {
+        javaMaxHeapSize "2048M"
+    }
+    compileOptions.incremental = false
+}
+
+dependencies {
+    //automatically added dependencies when project was created
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //Kotlin dependencies including Anko
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile 'org.jetbrains.anko:anko-support-v4:0.10.1'
+    /**
+     * Anko's DSL dependencies
+     */
+//    compile 'org.jetbrains.anko:anko-sdk15:0.7.1' // sdk19, sdk21, sdk23 are also available
+//    compile 'org.jetbrains.anko:anko-recyclerview-v7:0.7.1'
+//    compile 'org.jetbrains.anko:anko-percent:0.7.1'
+//    compile 'org.jetbrains.anko:anko-gridlayout-v7:0.7.1'
+//    compile 'org.jetbrains.anko:anko-design:0.7.1'
+//    compile 'org.jetbrains.anko:anko-cardview-v7:0.7.1'
+//    compile 'org.jetbrains.anko:anko-appcompat-v7:0.7.1'
+
+    //Dagger 2 dependencies
+    compile 'com.google.dagger:dagger:2.5'
+    kapt 'com.google.dagger:dagger-compiler:2.5'
+    provided 'org.glassfish:javax.annotation:10.0-b28'
+    //Android basic dependencies
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    //Networking dependencies
+//    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+//    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+//    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
+//    compile 'com.squareup.picasso:picasso:2.5.2'
+    //Rx dependencies
+    compile 'io.reactivex:rxandroid:1.2.1'
+    compile 'io.reactivex:rxkotlin:0.60.0'
+    //Test dependencies
+    androidTestCompile 'commons-io:commons-io:2.4'
+    androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
+}
+

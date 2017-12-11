@@ -19,6 +19,7 @@ const LINKED_NODE_CHART = "Linked node chart";
 const self = module.exports = {
   init: (input, flags) => {
 
+    // Default project path is the current folder
     var rootPath = './';
 
     // Check for specified path and validate
@@ -43,7 +44,7 @@ const self = module.exports = {
 
       if (components.length == 0) {
         log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
-        return;
+        process.exit(2);
       }
 
       const chartQuestions = [{

@@ -10,19 +10,12 @@ updateNotifier({ pkg }).notify();
 
 const cli = meow(`
 Usage
-
-   $ daggraph <command> <params>
-
-   $ daggraph sample <param>             # Uses the <PARAM>
-   $ daggraph other <param>              # Other the <PARAM>
-   $ daggraph another <param>            # Another the <PARAM>
    
- Examples
+   $ daggraph <path>                    # Uses the <path>
+   
+Examples
 
-   $ daggraph sample TEST                # Uses the TEST
-   $ daggraph sample YOLO                # Uses the YOLO
-   $ daggraph other YOLO                 # Uses the YOLO
-   $ daggraph another YOLO               # Uses the YOLO
+   $ daggraph /Path/to/android/project  # Uses the TEST
 `,
   {
     alias: {
