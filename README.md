@@ -31,6 +31,9 @@ Select which chart you want to generate:
 npm install -g daggraph
 ```
 
+## Contribute
+Feel free to contribute by checking out the issues and picking somethig up, there are plenty of stuff that needs to be done 😄 (follow the general opensource <a href="https://opensource.guide/how-to-contribute/">contribution giudelines</a>)
+
 ## Created by
 [Davide Cirillo](https://github.com/dvdciri)
 
