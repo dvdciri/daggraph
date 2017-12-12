@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node cli.js",
     "test": "node test.js"
-  },  
+  },
   "bin": {
     "daggraph": "cli.js"
   },
@@ -26,7 +26,6 @@
     "open": "0.0.5",
     "opn": "^5.1.0",
     "regularity": "^0.5.1",
-    "sleep": "^5.1.1",
     "string-search": "^1.2.0",
     "update-notifier": "^2.3.0"
   },
