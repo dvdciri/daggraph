@@ -2,6 +2,7 @@
 <h1 align="center">Daggraph</h1>
 <p align="center"><a href="http://square.github.io/dagger/" target="_blank">Dagger</a> dependency graph generator for Android Developers</p>
 <p align="center">
+  <a href="https://travis-ci.org/dvdciri/daggraph"><img src="https://travis-ci.org/dvdciri/daggraph.svg?branch=master" alt="Build Status"></a>
   <a href="https://www.npmjs.com/package/daggraph"><img src="https://img.shields.io/npm/dt/daggraph.svg" alt="npm"></a>
   <a href="https://www.npmjs.com/package/daggraph"><img src="https://img.shields.io/npm/v/daggraph.svg" alt="npm"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
@@ -30,6 +31,9 @@ Select which chart you want to generate:
 ```sh
 npm install -g daggraph
 ```
+
+## Contribute
+Feel free to contribute by checking out the issues and picking somethig up, there are plenty of stuff that needs to be done 😄 (follow the general opensource <a href="https://opensource.guide/how-to-contribute/">contribution giudelines</a>)
 
 ## Created by
 [Davide Cirillo](https://github.com/dvdciri)

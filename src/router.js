@@ -41,6 +41,11 @@ const self = module.exports = {
     DAGGER_ANALYZER.findComponents(rootPath)
     .then(components => {
 
+      if (components.length == 0) {
+        console.log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
+        return;
+      }
+
       const chartQuestions = [{
         type: "list",
         name: "chart",
@@ -96,5 +101,5 @@ function createFileAndSave(placeholderPath, fileContent, fileName){
 }
 
 function isGradleFolder(rootPath){
-  return fs.existsSync(rootPath + 'build.gradle');
+  return fs.existsSync(path.join(rootPath, 'build.gradle'));
 }

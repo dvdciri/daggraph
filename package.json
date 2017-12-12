@@ -1,13 +1,16 @@
 {
   "name": "daggraph",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A dagger dependency graph generator",
   "author": {
     "name": "Davide Cirillo",
     "email": "dvd.ciri@gmail.com",
     "url": "https://github.com/dvdciri"
   },
-  "scripts": {},
+  "scripts": {
+    "start": "node cli.js",
+    "test": "node test.js"
+  },  
   "bin": {
     "daggraph": "cli.js"
   },
