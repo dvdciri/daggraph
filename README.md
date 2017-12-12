@@ -33,7 +33,11 @@ npm install -g daggraph
 ```
 
 ## Contribute
-Feel free to contribute by checking out the issues and picking somethig up, there are plenty of stuff that needs to be done 😄 (follow the general opensource <a href="https://opensource.guide/how-to-contribute/">contribution giudelines</a>)
+Feel free to contribute by checking out the issues and picking somethig up! 😄 (follow the general opensource <a href="https://opensource.guide/how-to-contribute/">contribution giudelines</a>)
+
+A big shout for the contributions:
+- [Matteo Basso](https://github.com/mbasso)
+- [César Ferreira](https://github.com/cesarferreira)
 
 ## Created by
 [Davide Cirillo](https://github.com/dvdciri)
