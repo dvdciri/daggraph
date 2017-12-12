@@ -4,10 +4,10 @@ const Chalk = require('chalk');
 const path = require('path');
 const fs = require('fs');
 var Inquirer = require("inquirer");
-var sleep = require('sleep');
 const DAGGER_ANALYZER = require('./dagger/DaggerAnalyzer');
-const GRAPH_MAPPER = require('./graph/GraphMapper')
-var EXEC = require('child_process').execSync;
+const GRAPH_MAPPER = require('./graph/GraphMapper');
+const opn = require('opn');
+const log = console.log;
 
 // Chart types
 const BUBBLE_CHART = "Bubble chart";
@@ -24,7 +24,7 @@ const self = module.exports = {
     // Check for specified path and validate
     if (input[0] !== undefined) {
       if (!fs.lstatSync(input[0]).isDirectory()) {
-        console.log(Chalk.red('Path is not a directory'));
+        log(Chalk.red('Path is not a directory'));
         process.exit(2);
       } else {
         rootPath = input[0];
@@ -33,7 +33,7 @@ const self = module.exports = {
 
     // If is not a gradle folder, stop
     if (!isGradleFolder(rootPath)) {
-      console.log(Chalk.red(`This is not a gradle folder`));
+      log(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
@@ -42,7 +42,7 @@ const self = module.exports = {
     .then(components => {
 
       if (components.length == 0) {
-        console.log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
+        log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
         return;
       }
 
@@ -57,7 +57,7 @@ const self = module.exports = {
         ]
       }];
 
-      console.log('\n');
+      log('\n');
       Inquirer.prompt(chartQuestions)
       .then((answers) =>{
 
@@ -85,7 +85,7 @@ const self = module.exports = {
 
         createFileAndSave(placeholderPath, fileContent, fileName);
       });
-    }).catch(msg => console.log(msg));
+    }).catch(msg => log(msg));
   }
 };
 
@@ -93,10 +93,9 @@ function createFileAndSave(placeholderPath, fileContent, fileName){
   const index_content = fs.readFileSync(placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(fileContent, null, 2));
   const output_path = path.join('build', fileName);
   const absFilePath = path.join(process.cwd(), output_path);
+  log(`Opening: ${Chalk.green(absFilePath)}`);
   fs.writeFile(output_path, index_content, function(err) {
-    console.log("\nAll done! The chart was saved in "+ absFilePath + ". Opening..");
-    sleep.sleep(3);
-    EXEC('open ' + absFilePath)
+    opn(absFilePath, { wait: false });
   }); 
 }
 
