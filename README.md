@@ -17,8 +17,6 @@ or
 Analyze a specific folder:
 > daggraph `<folder_path>`
 
---------
-
 Select which chart you want to generate:
 
 <p align="center">
