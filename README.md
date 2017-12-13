@@ -27,6 +27,21 @@ Select which chart you want to generate:
   <img height="200" src="img/linked_node_graph.png" />
 </p>
 
+## Features
+Those are the features that are currently supported and used to build the graph, some of the are work in progress while some other will be picked at a later stage
+
+| Feature               | Java          | Kotlin  |
+| ----------------------|:-------------:|:-------:|
+| @Module               |  ✅           |   🚧     |
+| @Component            |  ✅           |   🚧     |
+| @SubComponent         |  ✅           |   🚧     |
+| @Provides             |  ✅           |   🚧     |
+| Field @Inject         |  ✅           |   🚧     |
+| Constructor @Inject   |  ❌           |   ❌     |
+| @Named()              |  ❌           |   ❌     |
+| @Binds                |  ❌           |   ❌     |
+| Component dependencies|  ❌           |   ❌     |
+
 ## Install
 ```sh
 npm install -g daggraph
