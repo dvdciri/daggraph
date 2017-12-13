@@ -26,7 +26,7 @@ Select which chart you want to generate:
 </p>
 
 ## Features
-Those are the features that are currently supported and used to build the graph, some of the are work in progress while some other will be picked at a later stage
+Those are the features that are currently supported and used to build the graph, some of them are work in progress while some other will be picked up at a later stage
 
 | Feature               | Java          | Kotlin  |
 | ----------------------|:-------------:|:-------:|
