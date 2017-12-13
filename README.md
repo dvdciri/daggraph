@@ -39,6 +39,7 @@ Those are the features that are currently supported and used to build the graph,
 | @Named()              |  ❌           |   ❌     |
 | @Binds                |  ❌           |   ❌     |
 | Component dependencies|  ❌           |   ❌     |
+| Extended modules      |  ❌           |   ❌     |
 
 ## Install
 ```sh
