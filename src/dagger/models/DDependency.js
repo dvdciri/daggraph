@@ -12,4 +12,8 @@ DDependency.prototype.addInjectionPath = function (injectionPath) {
     this.injectionPaths.push(injectionPath);
 }
 
+DDependency.prototype.addNamed = function (n) {
+    this.named = n;
+}
+
 module.exports = DDependency;
