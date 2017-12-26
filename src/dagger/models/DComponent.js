@@ -1,6 +1,6 @@
 const FS = require('fs');
-const Regularity = require('regularity');
 const Utils = require('./../../utils/utils');
+const DModule = require('./DModule');
 
 function DComponent(){
     this.modules = [];
@@ -16,9 +16,8 @@ DComponent.prototype.init = function(path, allModules){
 };
 
 function getModules(file, allModules){
-    // Load modules
-    var regularity = new Regularity();
-    var modulesRegex = /(\w+)\.class,*/g;
+    // Find the modules in the components for java or kotlin
+    var modulesRegex = /(\w+)(?:.|::)class,*/g; 
 
     // For each module specified in the component, try to find it in the loaded modules
     var moduleMatches = file.match(modulesRegex);
@@ -29,11 +28,20 @@ function getModules(file, allModules){
             while ((array = modulesRegex.exec(element)) !== null) {
 
                 // If the model name in the component matches one of the modules that we have loaded, then add it to the component
-                allModules.forEach(module => {
-                    if (array[1] === module.name) {
-                        result.push(module);
+                var loadedModule;
+                allModules.forEach(m => {
+                    if (array[1] === m.name) {
+                        loadedModule = m;
+                        // TODO break here
                     }
                 });
+                // If we don't have the module loaded, fallback creating a new one with just that name
+                if (loadedModule === undefined){
+                    loadedModule = new DModule();
+                    loadedModule.name = array[1];
+                }
+
+                result.push(loadedModule);
             }
         });
     }
@@ -43,20 +51,15 @@ function getModules(file, allModules){
 function getInjections(file){
     var result = []; 
 
-    // Load injections
-    var regularity = new Regularity();
-    var injectionsRegex = regularity
-        .then("inject(")
-        .oneOrMore("alphanumeric")
-        .global()
-        .multiline()
-        .done();
+    // Find all the injections in this component for java or kotlin
+    var injectionsRegex = /(?:void|fun)\s*inject\s*\((?:\w+:)?(?:\s*)?(\w*)/g;
 
     var matches = file.match(injectionsRegex);
     if (matches != null) {
         matches.forEach(element => {
-            var injection = element.split('(')[1];
-            result.push(injection);
+            while ((array = injectionsRegex.exec(element)) !== null) {
+                result.push(array[1]);
+            }
         });
     }
     return result;
