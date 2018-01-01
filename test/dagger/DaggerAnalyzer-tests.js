@@ -16,7 +16,7 @@ test("GIVEN java  sample project WHEN analyze THEN correct components found", t 
     });
 });
 
-test("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
+test.skip("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         
         const expectedModulesNames = ["AppModule", "ActivityBuilder", "AndroidSupportInjectionModule"];
@@ -28,7 +28,7 @@ test("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
     });
 });
 
-test("GIVEN java sample project WHEN analyze THEN correct dependencies found", t => {
+test.skip("GIVEN java sample project WHEN analyze THEN correct dependencies found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         const modules = components[0].modules;
 
@@ -50,33 +50,29 @@ test("GIVEN java sample project WHEN analyze THEN correct dependencies found", t
 
 /* start ################################### kotlin_dagger_default tests ###################################*/
 
-test("GIVEN kotlin sample project WHEN analyze THEN correct components found", t => {
+test.skip("GIVEN kotlin sample project WHEN analyze THEN correct components found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
-        console.log("Kotlin project path: " + path.join(__dirname, "../data/kotlin_dagger_default"));
+
         const expectedComponentsName = ["ApplicationComponent"];
       
         t.is(components.length, expectedComponentsName.length); 
         components.forEach(c => assert(expectedComponentsName.includes(c.name)));
-    }).catch(e => {
-        console.log("Error catch promise 1: "+e);
     });
 });
 
-test("GIVEN kotlin sample project WHEN analyze THEN correct modules found", t => {
+test.skip("GIVEN kotlin sample project WHEN analyze THEN correct modules found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
-        console.log("Kotlin project path: " + path.join(__dirname, "../data/kotlin_dagger_default"));
+
         const expectedModulesNames = ["AndroidModule"];
         
         const modules = components[0].modules;
         
         t.is(modules.length, expectedModulesNames.length);
         modules.forEach(m => assert(expectedModulesNames.includes(m.name)));
-    }).catch(e => {
-        console.log("Error catch promise 2: "+e);
     });
 });
 
-test("GIVEN kotlin sample project WHEN analyze THEN correct dependencies found", t => {
+test.skip("GIVEN kotlin sample project WHEN analyze THEN correct dependencies found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
         
         const expectedDeps = ["AndroidModule"];

@@ -56,6 +56,7 @@ function searchModules(searchCriteria){
       const fileSniffer = FILE_SNIFFER.create(searchCriteria);
   
       fileSniffer.on('match', (path) => {
+        console.log("found component" + path);
         if (analyzed.includes(path)) return;
         analyzed.push(path);
 
