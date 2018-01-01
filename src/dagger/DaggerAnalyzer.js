@@ -39,6 +39,7 @@ function searchModules(searchCriteria){
         daggerModules.push(module);
       });
       fileSniffer.on("end", (files) => {
+        console.log("Search modules finished with files: " + files);
         resolve(findAndAddInjections(daggerModules, searchCriteria));
       });
       fileSniffer.on("error", (e) => {
@@ -56,7 +57,6 @@ function searchModules(searchCriteria){
       const fileSniffer = FILE_SNIFFER.create(searchCriteria);
   
       fileSniffer.on('match', (path) => {
-        console.log("found component" + path);
         if (analyzed.includes(path)) return;
         analyzed.push(path);
 
@@ -65,6 +65,7 @@ function searchModules(searchCriteria){
         daggerComponents.push(component);
       });
       fileSniffer.on("end", (files) => {
+        console.log("Search components finished with files: " + files);        
         resolve(daggerComponents);
       });
       fileSniffer.on("error", (e) => {
@@ -113,6 +114,7 @@ function searchModules(searchCriteria){
           }
         });
         fileSniffer.on("end", (files) => {
+          console.log("Search injection finished with files: " + files);       
           addInjectionsToModules(injectionPathMap, modules);
           resolve(modules);
         });
