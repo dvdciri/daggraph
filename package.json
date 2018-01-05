@@ -19,7 +19,7 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "filehound": "^1.16.2",
-    "filesniffer": "0.0.3-alpha.1",
+    "filesniffer": "1.0.3",
     "inquirer": "^4.0.1",
     "meow": "^3.7.0",
     "node-time-log": "^1.0.3",

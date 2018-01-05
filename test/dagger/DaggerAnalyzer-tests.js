@@ -5,7 +5,7 @@ const DAGGER_ANALYZER = require('./../../src/dagger/DaggerAnalyzer');
 
 /* start ################################### of java_dagger_defaut tests */
 
-test("GIVEN java  sample project WHEN analyze THEN correct components found", t => {
+test("GIVEN java sample project WHEN analyze THEN correct components found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         const expectedComponentsName = ["AppComponent"];
 

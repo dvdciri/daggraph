@@ -21,7 +21,7 @@ function findComponents(projectRootPath){
     .ignoreHiddenFiles()
     .ext('.java', '.kt');
 
-  return searchModules(searchCriteria).then(modules => searchComponents(modules, searchCriteria));
+  return searchModules(searchCriteria).then(modules => searchComponents(modules, projectRootPath));
 }
 
 function searchModules(searchCriteria){
@@ -49,12 +49,12 @@ function searchModules(searchCriteria){
     });
   }
   
-  function searchComponents(modules, searchCriteria){
+  function searchComponents(modules, projectRootPath){
     return new Promise((resolve, reject) => {
 
       const daggerComponents = [];
       const analyzed = []; 
-      const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+      const fileSniffer = FILE_SNIFFER.create(projectRootPath);
   
       fileSniffer.on('match', (path) => {
         if (analyzed.includes(path)) return;
