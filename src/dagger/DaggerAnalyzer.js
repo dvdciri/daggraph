@@ -1,5 +1,4 @@
 // Files
-const FILE_HOUND = require('filehound');
 const FILE_SNIFFER = require('filesniffer');
 const FS = require('fs');
 // Models
@@ -13,22 +12,21 @@ const DComponent = require('./models/DComponent.js');
 function findComponents(projectRootPath){
   console.log('Analyzing dagger components and modules..');
 
-  const searchCriteria = FILE_HOUND.create()
-    .paths(projectRootPath)
-    .discard("build")		
-    .depth(20)
-    .ignoreHiddenDirectories()
-    .ignoreHiddenFiles()
-    .ext('.java', '.kt');
-
-  return searchModules(searchCriteria).then(modules => searchComponents(modules, searchCriteria));
+  return searchModules(projectRootPath).then(modules => searchComponents(modules, projectRootPath));
 }
 
-function searchModules(searchCriteria){
+function searchModules(projectRootPath){
     return new Promise((resolve, reject) => {
       const daggerModules = [];
       const analyzed = []; 
-      const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+      const fileSniffer = FILE_SNIFFER
+        .create()
+        .path(projectRootPath)
+        //.discard("build")	
+        //.ext('.java', '.kt')
+        //.ignoreHiddenDirectories()
+        //.ignoreHiddenFiles()
+        .depth(20);
   
       fileSniffer.on("match", (path) => {
         if (analyzed.includes(path)) return;
@@ -40,7 +38,7 @@ function searchModules(searchCriteria){
       });
       fileSniffer.on("end", (files) => {
         console.log("Search modules finished with files: " + files);
-        resolve(findAndAddInjections(daggerModules, searchCriteria));
+        resolve(findAndAddInjections(daggerModules, projectRootPath));
       });
       fileSniffer.on("error", (e) => {
         reject("Error while searching for modules "+e);
@@ -49,12 +47,18 @@ function searchModules(searchCriteria){
     });
   }
   
-  function searchComponents(modules, searchCriteria){
+  function searchComponents(modules, projectRootPath){
     return new Promise((resolve, reject) => {
 
       const daggerComponents = [];
       const analyzed = []; 
-      const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+      const fileSniffer = FILE_SNIFFER.create()
+        .path(projectRootPath)
+        //.discard("build")	
+        //.ext('.java', '.kt')
+        //.ignoreHiddenDirectories()
+        //.ignoreHiddenFiles()
+        .depth(20);
   
       fileSniffer.on('match', (path) => {
         if (analyzed.includes(path)) return;
@@ -75,14 +79,21 @@ function searchModules(searchCriteria){
     });
   }
 
-  function findAndAddInjections(modules, searchCriteria){
+  function findAndAddInjections(modules, projectRootPath){
     return new Promise((resolve, reject) => {
         const injectionPathMap = [];
 
         // Find all the field injections for kotline and java (group 1 java only, group 2 kotlin only) 
         const injectRegex = /(?:(?:@Inject(?:\n|.)*?\s+(?:protected|public|lateinit|(\w+(?:\.\w+)*))?\s+(?:var(?:\n|.)*?:\s*)?)|(?:@field\s*:\s*\[(?:\n|.)*?Inject(?:\n|.)*?\]\s*(?:protected|public|lateinit)?\s*var\s*.+?\s*:\s*))(\w+(?:\.\w+)*)/g;
         const namedRegex = /@*Named\(\"(\w*)\"\)/;
-        const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+        const fileSniffer = FILE_SNIFFER
+          .create()
+          .path(projectRootPath)
+          //.discard("build")	
+          //.ext('.java', '.kt')
+          //.ignoreHiddenDirectories()
+          //.ignoreHiddenFiles()
+          .depth(20);
 
         fileSniffer.on('match', (path) => {
           // Open file
