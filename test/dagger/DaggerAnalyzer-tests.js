@@ -16,7 +16,7 @@ test("GIVEN java sample project WHEN analyze THEN correct components found", t =
     });
 });
 
-test.skip("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
+test("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         
         const expectedModulesNames = ["AppModule", "ActivityBuilder", "AndroidSupportInjectionModule"];
@@ -28,7 +28,7 @@ test.skip("GIVEN java sample project WHEN analyze THEN correct modules found", t
     });
 });
 
-test.skip("GIVEN java sample project WHEN analyze THEN correct dependencies found", t => {
+test("GIVEN java sample project WHEN analyze THEN correct dependencies found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         const modules = components[0].modules;
 
@@ -50,7 +50,7 @@ test.skip("GIVEN java sample project WHEN analyze THEN correct dependencies foun
 
 /* start ################################### kotlin_dagger_default tests ###################################*/
 
-test.skip("GIVEN kotlin sample project WHEN analyze THEN correct components found", t => {
+test("GIVEN kotlin sample project WHEN analyze THEN correct components found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
 
         const expectedComponentsName = ["ApplicationComponent"];
@@ -60,7 +60,7 @@ test.skip("GIVEN kotlin sample project WHEN analyze THEN correct components foun
     });
 });
 
-test.skip("GIVEN kotlin sample project WHEN analyze THEN correct modules found", t => {
+test("GIVEN kotlin sample project WHEN analyze THEN correct modules found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
 
         const expectedModulesNames = ["AndroidModule"];
@@ -72,7 +72,7 @@ test.skip("GIVEN kotlin sample project WHEN analyze THEN correct modules found",
     });
 });
 
-test.skip("GIVEN kotlin sample project WHEN analyze THEN correct dependencies found", t => {
+test("GIVEN kotlin sample project WHEN analyze THEN correct dependencies found", t => {
     return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
         
         const expectedDeps = ["AndroidModule"];
