@@ -23,6 +23,8 @@ async function findComponents(projectRootPath){
     .ext('.java', '.kt')
     .find();
 
+    console.log("File hound files: " + files);
+
   return searchModules(files).then(modules => searchComponents(modules, files));
 }
 
@@ -66,6 +68,7 @@ function searchModules(files){
         daggerComponents.push(component);
       });
       fileSniffer.on("end", (files) => {
+        console.log("All components file found: "+files);
         resolve(daggerComponents);
       });
       fileSniffer.on("error", (e) => {
