@@ -23,6 +23,7 @@ async function findComponents(projectRootPath){
     .ext('.java', '.kt')
     .find();
 
+    console.log("Project path: "+projectRootPath);
     console.log("File hound files: " + files);
 
   return searchModules(files).then(modules => searchComponents(modules, files));
