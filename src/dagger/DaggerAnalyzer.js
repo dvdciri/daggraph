@@ -16,15 +16,12 @@ async function findComponents(projectRootPath){
   const files = await FileHound
     .create()
     .paths(projectRootPath)
-    //.discard("build")		
+    .discard("build/generated")		
     .depth(20)
     .ignoreHiddenDirectories()
     .ignoreHiddenFiles()
     .ext('.java', '.kt')
     .find();
-
-    console.log("Project path: "+projectRootPath);
-    console.log("File hound files: " + files);
 
   return searchModules(files).then(modules => searchComponents(modules, files));
 }
@@ -69,7 +66,6 @@ function searchModules(files){
         daggerComponents.push(component);
       });
       fileSniffer.on("end", (files) => {
-        console.log("All components file found: "+files);
         resolve(daggerComponents);
       });
       fileSniffer.on("error", (e) => {
