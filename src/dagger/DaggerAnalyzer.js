@@ -16,7 +16,7 @@ async function findComponents(projectRootPath){
   const files = await FileHound
     .create()
     .paths(projectRootPath)
-    .discard("build")		
+    //.discard("build")		
     .depth(20)
     .ignoreHiddenDirectories()
     .ignoreHiddenFiles()
