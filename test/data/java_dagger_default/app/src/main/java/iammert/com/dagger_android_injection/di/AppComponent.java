@@ -15,7 +15,7 @@ import iammert.com.dagger_android_injection.AndroidSampleApp;
  * Created by mertsimsek on 25/05/2017.
  */
 @Singleton
-@Component(modules = {
+@dagger.Component(modules = {
         AndroidSupportInjectionModule.class,
         AppModule.class,
         ActivityBuilder.class})

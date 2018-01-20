@@ -71,7 +71,7 @@ function searchModules(files){
       fileSniffer.on("error", (e) => {
         reject("Error while searching for components " + e);
       });
-      fileSniffer.find(/@Component|@Subcomponent/);
+      fileSniffer.find(/@(?:dagger\.)?(?:Component|Subcomponent)/);
     });
   }
 
