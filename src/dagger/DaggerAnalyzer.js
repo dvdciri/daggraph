@@ -1,6 +1,6 @@
 // Files
-const FILE_HOUND = require('filehound');
-const FILE_SNIFFER = require('filesniffer');
+const FileSniffer = require('filesniffer').FileSniffer;
+const FileHound = require('filehound');
 const FS = require('fs');
 // Models
 const DModule = require('./models/DModule.js');
@@ -10,25 +10,27 @@ const DComponent = require('./models/DComponent.js');
  * Find and load the dagger components and modules
  * @param {*Path of the android project} projectRootPath 
  */
-function findComponents(projectRootPath){
+async function findComponents(projectRootPath){
   console.log('Analyzing dagger components and modules..');
 
-  const searchCriteria = FILE_HOUND.create()
+  const files = await FileHound
+    .create()
     .paths(projectRootPath)
-    .discard("build")		
+    .discard("build/generated")		
     .depth(20)
     .ignoreHiddenDirectories()
     .ignoreHiddenFiles()
-    .ext('.java', '.kt');
+    .ext('.java', '.kt')
+    .find();
 
-  return searchModules(searchCriteria).then(modules => searchComponents(modules, searchCriteria));
+  return searchModules(files).then(modules => searchComponents(modules, files));
 }
 
-function searchModules(searchCriteria){
+function searchModules(files){
     return new Promise((resolve, reject) => {
       const daggerModules = [];
       const analyzed = []; 
-      const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+      const fileSniffer = FileSniffer.create().paths(files);
   
       fileSniffer.on("match", (path) => {
         if (analyzed.includes(path)) return;
@@ -39,7 +41,7 @@ function searchModules(searchCriteria){
         daggerModules.push(module);
       });
       fileSniffer.on("end", (files) => {
-        resolve(findAndAddInjections(daggerModules, searchCriteria));
+        resolve(findAndAddInjections(daggerModules, files));
       });
       fileSniffer.on("error", (e) => {
         reject("Error while searching for modules "+e);
@@ -48,12 +50,12 @@ function searchModules(searchCriteria){
     });
   }
   
-  function searchComponents(modules, searchCriteria){
+  function searchComponents(modules, files){
     return new Promise((resolve, reject) => {
 
       const daggerComponents = [];
       const analyzed = []; 
-      const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+      const fileSniffer = FileSniffer.create().paths(files);
   
       fileSniffer.on('match', (path) => {
         if (analyzed.includes(path)) return;
@@ -69,18 +71,18 @@ function searchModules(searchCriteria){
       fileSniffer.on("error", (e) => {
         reject("Error while searching for components " + e);
       });
-      fileSniffer.find(/@Component|@Subcomponent/);
+      fileSniffer.find(/@(?:dagger\.)?(?:Component|Subcomponent)/);
     });
   }
 
-  function findAndAddInjections(modules, searchCriteria){
+  function findAndAddInjections(modules, files){
     return new Promise((resolve, reject) => {
         const injectionPathMap = [];
 
         // Find all the field injections for kotline and java (group 1 java only, group 2 kotlin only) 
         const injectRegex = /(?:(?:@Inject(?:\n|.)*?\s+(?:protected|public|lateinit|(\w+(?:\.\w+)*))?\s+(?:var(?:\n|.)*?:\s*)?)|(?:@field\s*:\s*\[(?:\n|.)*?Inject(?:\n|.)*?\]\s*(?:protected|public|lateinit)?\s*var\s*.+?\s*:\s*))(\w+(?:\.\w+)*)/g;
         const namedRegex = /@*Named\(\"(\w*)\"\)/;
-        const fileSniffer = FILE_SNIFFER.create(searchCriteria);
+        const fileSniffer = FileSniffer.create().paths(files);
 
         fileSniffer.on('match', (path) => {
           // Open file
