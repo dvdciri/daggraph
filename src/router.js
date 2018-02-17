@@ -94,7 +94,15 @@ function createFileAndSave(placeholderPath, fileContent, fileName){
   const index_content = fs.readFileSync(placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(fileContent, null, 2));
   const output_path = path.join('build', fileName);
   const absFilePath = path.join(process.cwd(), output_path);
+
+  try {
+    fs.statSync(getBuildFolderPath())
+  } catch(e) {
+    fs.mkdirSync(getBuildFolderPath());
+  }
+
   log(`Opening: ${Chalk.green(absFilePath)}`);
+
   fs.writeFile(output_path, index_content, function(err) {
     opn(absFilePath, { wait: false });
   }); 
@@ -102,4 +110,8 @@ function createFileAndSave(placeholderPath, fileContent, fileName){
 
 function isGradleFolder(rootPath){
   return fs.existsSync(path.join(rootPath, 'build.gradle'));
+}
+
+function getBuildFolderPath(){
+  return path.join(process.cwd(), 'build');
 }
