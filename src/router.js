@@ -46,7 +46,7 @@ const self = module.exports = {
         log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
         process.exit(2);
       }
-
+      
       const chartQuestions = [{
         type: "list",
         name: "chart",
@@ -57,42 +57,49 @@ const self = module.exports = {
           LINKED_NODE_CHART
         ]
       }];
-
+    
       log('\n');
       Inquirer.prompt(chartQuestions)
-      .then((answers) =>{
+      .then((answers) => getGraphDataFromChartType(answers.chart, components))
+      .then((graphData) => createFileAndSave(graphData))
 
-        let fileContent;
-        let placeholderPath;
-        let fileName;
-        
-        switch(answers.chart) {
-          case BUBBLE_CHART:
-            fileContent = GRAPH_MAPPER.toBubbleGraph(components);
-            placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
-            fileName = 'dependency_bubble_graph.html';
-            break;
-          case TREE_CHART:
-            fileContent = GRAPH_MAPPER.toTreeGraph(components);
-            placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
-            fileName = 'dependency_tree_graph.html';
-            break;
-          case LINKED_NODE_CHART:
-            fileContent = GRAPH_MAPPER.toLinkedNodes(components);
-            placeholderPath = path.join(__dirname, 'graph', 'linked_nodes', 'placeholder_index.html');
-            fileName = 'dependency_linked_nodes_graph.html';
-            break;
-      }
-
-        createFileAndSave(placeholderPath, fileContent, fileName);
-      });
     }).catch(msg => log(msg));
   }
 };
 
-function createFileAndSave(placeholderPath, fileContent, fileName){
-  const index_content = fs.readFileSync(placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(fileContent, null, 2));
-  const output_path = path.join('build', fileName);
+function getGraphDataFromChartType(chartType, components){
+  let fileContent;
+  let placeholderPath;
+  let fileName;
+  
+  switch(chartType) {
+    case BUBBLE_CHART:
+      fileContent = GRAPH_MAPPER.toBubbleGraph(components);
+      placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
+      fileName = 'dependency_bubble_graph.html';
+      break;
+    case TREE_CHART:
+      fileContent = GRAPH_MAPPER.toTreeGraph(components);
+      placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
+      fileName = 'dependency_tree_graph.html';
+      break;
+    case LINKED_NODE_CHART:
+      fileContent = GRAPH_MAPPER.toLinkedNodes(components);
+      placeholderPath = path.join(__dirname, 'graph', 'linked_nodes', 'placeholder_index.html');
+      fileName = 'dependency_linked_nodes_graph.html';
+      break;
+  }
+
+  return Promise.resolve({
+    'fileContent' : fileContent,
+    'placeholderPath' : placeholderPath,
+    'fileName' : fileName
+  });
+}
+
+function createFileAndSave(graphData){
+  const index_content = fs.readFileSync(graphData.placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(graphData.fileContent, null, 2));
+  const output_path = path.join('build', graphData.fileName);
   const absFilePath = path.join(process.cwd(), output_path);
 
   try {

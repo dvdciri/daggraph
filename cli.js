@@ -15,7 +15,7 @@ Usage
    
 Examples
 
-   $ daggraph /Path/to/android/project  # Uses the TEST
+   $ daggraph /Path/to/android/project
 `,
   {
     alias: {
