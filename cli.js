@@ -11,7 +11,8 @@ updateNotifier({ pkg }).notify();
 const cli = meow(`
 Usage
    
-   $ daggraph <path>                    # Uses the <path>
+  $ daggraph            # uses current folder path
+  $ daggraph <path>     # uses <path>
    
 Examples
 
