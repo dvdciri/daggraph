@@ -66,6 +66,9 @@ function toTreeGraph(components){
     return mainNode;
 }
 
+/**
+ * Converts components into a Linked nodes structure
+ */
 function toLinkedNodes(components) {
     const linkedNodes = new LinkedNodes();
     var componentGroup = 1;

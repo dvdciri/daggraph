@@ -13,7 +13,9 @@ const log = console.log;
 const BUBBLE_CHART = "Bubble chart";
 const TREE_CHART = "Tree chart";
 const LINKED_NODE_CHART = "Linked node chart";
-
+const CHART = "Chart";
+const RAW_DATA = "Raw data";
+const JSON_TYPE = "Json";
 
 // Main code //
 const self = module.exports = {
@@ -46,60 +48,105 @@ const self = module.exports = {
         log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
         process.exit(2);
       }
-      
-      const chartQuestions = [{
-        type: "list",
-        name: "chart",
-        message: "What kind of chart do you want to generate?",
-        choices: [
-          BUBBLE_CHART,
-          TREE_CHART,
-          LINKED_NODE_CHART
-        ]
-      }];
-    
-      log('\n');
-      Inquirer.prompt(chartQuestions)
-      .then((answers) => getGraphDataFromChartType(answers.chart, components))
-      .then((graphData) => createFileAndSave(graphData))
+
+      // Ask question about generating chart or exporting raw data
+      askChartOrExportRawDataQuestion()
+      .then((answer) => {
+        let fileDataPromise;
+        switch(answer.action){
+          case CHART:
+            fileDataPromise = askChartTypeQuestions()
+              .then((answers) => getGraphDataFromChartType(answers.chart_type, components));
+            break;
+          case RAW_DATA:
+            fileDataPromise = askRawDataQuestions()
+              .then((answer) => getRawDataForDataStructure(answer.data_structure, components));
+            break;
+        }
+        fileDataPromise.then((fileData) => createFileAndSave(fileData));
+      });  
 
     }).catch(msg => log(msg));
   }
 };
 
-function getGraphDataFromChartType(chartType, components){
+function askChartOrExportRawDataQuestion(){
+  const chartOrRawQuestion = [{
+    type: "list",
+    name: "action",
+    message: "Do you want to generate a chart or export raw data?",
+    choices: [CHART,RAW_DATA]
+  }];
+  return Inquirer.prompt(chartOrRawQuestion);
+}
+
+function askChartTypeQuestions(){
+  const chartQuestions = [{
+    type: "list",
+    name: "chart_type",
+    message: "What kind of chart do you want to generate?",
+    choices: [BUBBLE_CHART,TREE_CHART,LINKED_NODE_CHART]
+  }];
+  return Inquirer.prompt(chartQuestions);
+}
+
+function askRawDataQuestions(){
+  const rawTypeQuestion = [{
+    type: "list",
+    name: "data_structure",
+    message: "How do you want to export the data?",
+    choices: [JSON_TYPE]
+  }];
+  return Inquirer.prompt(rawTypeQuestion);
+}
+
+function getRawDataForDataStructure(type, components){
   let fileContent;
+  let fileName;
+  switch(type){
+    case JSON_TYPE:
+      fileContent = JSON.stringify(components, null, 2);
+      fileName = "dependency.json";
+      break;
+  }
+  return Promise.resolve({
+    'fileContent' : fileContent,
+    'fileName' : fileName
+  });
+}
+
+function getGraphDataFromChartType(chartType, components){
+  let jsonFileContent;
   let placeholderPath;
   let fileName;
   
   switch(chartType) {
     case BUBBLE_CHART:
-      fileContent = GRAPH_MAPPER.toBubbleGraph(components);
+      jsonFileContent = GRAPH_MAPPER.toBubbleGraph(components);
       placeholderPath = path.join(__dirname, 'graph', 'bubble', 'placeholder_index.html');
       fileName = 'dependency_bubble_graph.html';
       break;
     case TREE_CHART:
-      fileContent = GRAPH_MAPPER.toTreeGraph(components);
+      jsonFileContent = GRAPH_MAPPER.toTreeGraph(components);
       placeholderPath = path.join(__dirname, 'graph', 'tree', 'placeholder_index.html');
       fileName = 'dependency_tree_graph.html';
       break;
     case LINKED_NODE_CHART:
-      fileContent = GRAPH_MAPPER.toLinkedNodes(components);
+      jsonFileContent = GRAPH_MAPPER.toLinkedNodes(components);
       placeholderPath = path.join(__dirname, 'graph', 'linked_nodes', 'placeholder_index.html');
       fileName = 'dependency_linked_nodes_graph.html';
       break;
   }
+  let fileContent = fs.readFileSync(placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(jsonFileContent, null, 2));
 
   return Promise.resolve({
     'fileContent' : fileContent,
-    'placeholderPath' : placeholderPath,
     'fileName' : fileName
   });
 }
 
-function createFileAndSave(graphData){
-  const index_content = fs.readFileSync(graphData.placeholderPath, 'utf8').replace('JSON_PLACEHOLDER', JSON.stringify(graphData.fileContent, null, 2));
-  const output_path = path.join('build', graphData.fileName);
+function createFileAndSave(fileData){
+  const output_path = path.join('build', fileData.fileName);
   const absFilePath = path.join(process.cwd(), output_path);
 
   try {
@@ -110,7 +157,7 @@ function createFileAndSave(graphData){
 
   log(`Opening: ${Chalk.green(absFilePath)}`);
 
-  fs.writeFile(output_path, index_content, function(err) {
+  fs.writeFile(output_path, fileData.fileContent, function(err) {
     opn(absFilePath, { wait: false });
   }); 
 }
