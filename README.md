@@ -11,18 +11,14 @@
 ## Usage
 > daggraph `<folder_path>`
 
-Choose if you want to generate a graph or export the raw data
-<img src="img/export_type.png" alt="Build Status">
-
-(Chart only)
-Select which chart you want to generate
-<img src="img/chart_type.png" alt="Build Status">
-
 <p align="center">
   <img height="200" src="img/bubble_graph.jpg" />
   <img height="200" src="img/tree_graph.jpg" />
   <img height="200" src="img/linked_node_graph.png" />
 </p>
+
+or export raw data
+> daggraph raw `<folder_path>`
 
 ## Features
 Those are the features that are currently supported and used to build the graph, some of them are work in progress while some other will be picked up at a later stage
