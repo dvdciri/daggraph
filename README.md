@@ -9,6 +9,7 @@
 </p>
 
 ## Usage
+Simple usage:
 > daggraph `<folder_path>`
 
 <p align="center">
@@ -17,7 +18,9 @@
   <img height="200" src="img/linked_node_graph.png" />
 </p>
 
-or export raw data
+--------
+
+Export raw data:
 > daggraph raw `<folder_path>`
 
 ## Features
@@ -39,6 +42,20 @@ Those are the features that are currently supported and used to build the graph,
 ## Install
 ```sh
 npm install -g daggraph
+```
+
+## Help
+```
+Usage
+   
+  $ daggraph            # uses current folder path
+  $ daggraph <path>     # uses <path>
+  $ daggraph raw        # uses current folder path and export the raw data
+  $ daggraph raw <path  # uses <path> and export the raw data
+   
+Examples
+
+   $ daggraph /Path/to/android/project
 ```
 
 ## Contribute
