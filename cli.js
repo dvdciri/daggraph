@@ -13,6 +13,8 @@ Usage
    
   $ daggraph            # uses current folder path
   $ daggraph <path>     # uses <path>
+  $ daggraph raw        # uses current folder path and export the raw data
+  $ daggraph raw <path  # uses <path> and export the raw data
    
 Examples
 
