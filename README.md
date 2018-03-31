@@ -9,15 +9,14 @@
 </p>
 
 ## Usage
-Analyze the current folder:
-> daggraph
-
-or
-
-Analyze a specific folder:
 > daggraph `<folder_path>`
 
-Select which chart you want to generate:
+Choose if you want to generate a graph or export the raw data
+<img src="img/export_type.png" alt="Build Status">
+
+(Chart only)
+Select which chart you want to generate
+<img src="img/chart_type.png" alt="Build Status">
 
 <p align="center">
   <img height="200" src="img/bubble_graph.jpg" />
