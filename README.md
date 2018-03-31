@@ -9,21 +9,19 @@
 </p>
 
 ## Usage
-Analyze the current folder:
-> daggraph
-
-or
-
-Analyze a specific folder:
+Simple usage:
 > daggraph `<folder_path>`
-
-Select which chart you want to generate:
 
 <p align="center">
   <img height="200" src="img/bubble_graph.jpg" />
   <img height="200" src="img/tree_graph.jpg" />
   <img height="200" src="img/linked_node_graph.png" />
 </p>
+
+--------
+
+Export raw data:
+> daggraph raw `<folder_path>`
 
 ## Features
 Those are the features that are currently supported and used to build the graph, some of them are work in progress while some other will be picked up at a later stage
@@ -44,6 +42,20 @@ Those are the features that are currently supported and used to build the graph,
 ## Install
 ```sh
 npm install -g daggraph
+```
+
+## Help
+```
+Usage
+   
+  $ daggraph            # uses current folder path
+  $ daggraph <path>     # uses <path>
+  $ daggraph raw        # uses current folder path and export the raw data
+  $ daggraph raw <path  # uses <path> and export the raw data
+   
+Examples
+
+   $ daggraph /Path/to/android/project
 ```
 
 ## Contribute

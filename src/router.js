@@ -14,7 +14,6 @@ const BUBBLE_CHART = "Bubble chart";
 const TREE_CHART = "Tree chart";
 const LINKED_NODE_CHART = "Linked node chart";
 const CHART = "Chart";
-const RAW_DATA = "Raw data";
 const JSON_TYPE = "Json";
 
 // Main code //
@@ -23,14 +22,18 @@ const self = module.exports = {
 
     // Default project path is the current folder
     var rootPath = './';
+    var shouldExportRawData = false;
 
-    // Check for specified path and validate
+    // Define the path and raw data option
     if (input[0] !== undefined) {
-      if (!fs.lstatSync(input[0]).isDirectory()) {
-        log(Chalk.red('Path is not a directory'));
-        process.exit(2);
-      } else {
+      if (fs.existsSync(input[0]) && fs.lstatSync(input[0]).isDirectory()){
         rootPath = input[0];
+      } else if (input[0] === "raw") {
+        shouldExportRawData = true;
+
+        if (fs.existsSync(input[1]) && fs.lstatSync(input[1]).isDirectory()){
+          rootPath = input[1];
+        }
       }
     }
 
@@ -49,36 +52,20 @@ const self = module.exports = {
         process.exit(2);
       }
 
-      // Ask question about generating chart or exporting raw data
-      askChartOrExportRawDataQuestion()
-      .then((answer) => {
-        let fileDataPromise;
-        switch(answer.action){
-          case CHART:
-            fileDataPromise = askChartTypeQuestions()
-              .then((answers) => getGraphDataFromChartType(answers.chart_type, components));
-            break;
-          case RAW_DATA:
-            fileDataPromise = askRawDataQuestions()
+      let fileDataPromise;
+
+      // Check for raw data flag
+      if (shouldExportRawData) {
+        fileDataPromise = getRawDataForDataStructure(JSON_TYPE, components)
+      }else {
+        fileDataPromise = askChartTypeQuestions()
               .then((answer) => getRawDataForDataStructure(answer.data_structure, components));
-            break;
-        }
-        fileDataPromise.then((fileData) => createFileAndSave(fileData));
-      });  
+      }     
+      fileDataPromise.then((fileData) => createFileAndSave(fileData)); 
 
     }).catch(msg => log(msg));
   }
 };
-
-function askChartOrExportRawDataQuestion(){
-  const chartOrRawQuestion = [{
-    type: "list",
-    name: "action",
-    message: "Do you want to generate a chart or export raw data?",
-    choices: [CHART,RAW_DATA]
-  }];
-  return Inquirer.prompt(chartOrRawQuestion);
-}
 
 function askChartTypeQuestions(){
   const chartQuestions = [{
