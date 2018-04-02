@@ -30,6 +30,7 @@
   "devDependencies": {
     "ava": "^0.24.0",
     "eslint": "^4.14.0",
+    "inquirer-test": "^2.0.1",
     "xo": "^0.18.2"
   },
   "repository": {
