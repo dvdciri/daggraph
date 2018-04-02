@@ -59,7 +59,7 @@ const self = module.exports = {
         fileDataPromise = getRawDataForDataStructure(JSON_TYPE, components)
       }else {
         fileDataPromise = askChartTypeQuestions()
-              .then((answer) => getRawDataForDataStructure(answer.data_structure, components));
+          .then((answer) => getGraphDataFromChartType(answer.chart_type, components));
       }     
       fileDataPromise.then((fileData) => createFileAndSave(fileData)); 
 
