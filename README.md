@@ -38,6 +38,7 @@ Those are the features that are currently supported and used to build the graph,
 | @Binds                |  ❌           |   ❌     |
 | Component dependencies|  ❌           |   ❌     |
 | Extended modules      |  ❌           |   ❌     |
+| ActivityBuilder       |  ❌           |   ❌     |
 
 ## Install
 ```sh
