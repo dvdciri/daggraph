@@ -32,16 +32,17 @@ function getModules(file, allModules){
                 allModules.forEach(m => {
                     if (array[1] === m.name) {
                         loadedModule = m;
-                        // TODO break here
                     }
                 });
-                // If we don't have the module loaded, fallback creating a new one with just that name
-                if (loadedModule === undefined){
+                // If we don't have the module loaded, check if is one of the special modules of dagger
+                if (array[1] === "AndroidSupportInjectionModule"){
                     loadedModule = new DModule();
                     loadedModule.name = array[1];
                 }
 
-                result.push(loadedModule);
+                if (loadedModule !== undefined){
+                    result.push(loadedModule);
+                }
             }
         });
     }
