@@ -16,7 +16,8 @@ async function findComponents(projectRootPath){
   const files = await FileHound
     .create()
     .paths(projectRootPath)
-    .discard("build/generated")		
+    // We can't specify build/* because it will clash with the travis build folder 
+    .discard("build/generated", "build/tmp", "build/intermediates", "build/kotlin", "build/outputs", "build/reports") 
     .depth(20)
     .ignoreHiddenDirectories()
     .ignoreHiddenFiles()
