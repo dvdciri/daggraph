@@ -1,9 +1,9 @@
-function Node(id){
-    this.id = id;
-}
+export default class Node {
+    constructor(id){
+        this.id = id;
+    }
 
-Node.prototype.setGroup = function(g) {
-    this.group = g;
-}
-
-module.exports = Node;
+    setGroup = (g) => {
+        this.group = g;
+    }
+};

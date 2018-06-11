@@ -1,17 +1,6 @@
-const FS = require('fs');
-const DDependency = require('./DDependency.js');
-const Utils = require('./../../utils/utils');
-
-function DModule(){
-    this.dependencies = [];
-}
-
-DModule.prototype.init = function(filePath){
-    // Load name
-    this.name = Utils.getFilenameFromPath(filePath);
-    //Load provided dependencies
-    this.dependencies = getProvidedDependencies(filePath);
-};
+import FS from 'fs';
+import DDependency from './DDependency.js';
+import { getFilenameFromPath } from './../../utils/utils';
 
 function  getProvidedDependencies(path){
     let file = FS.readFileSync(path, 'utf8');
@@ -30,6 +19,7 @@ function  getProvidedDependencies(path){
     const namedRegex = /@Named\(\"([a-zA-Z0-9_ ]*)\"\)/;
 
     const deps = [];
+    let fullMatch;
     while ((fullMatch = fullDependencyRegex.exec(file)) !== null) {
 
         var dep = (fullMatch[3] !== undefined) ? fullMatch[3] : fullMatch[2];
@@ -41,6 +31,7 @@ function  getProvidedDependencies(path){
         // Get sub-depepndencies
         let params = (fullMatch[4] !== undefined) ? fullMatch[4] : fullMatch[1];
         if (params !== undefined) {
+            let paramMatch;
             while ((paramMatch = paramRegex.exec(params)) !== null) {
                 params = params.replace(paramRegex, "");
 
@@ -61,4 +52,13 @@ function  getProvidedDependencies(path){
     return deps;
 }
 
-module.exports = DModule;
+export default class DModule {
+    dependencies = [];
+
+    init = (filePath) => {
+        // Load name
+        this.name = getFilenameFromPath(filePath);
+        //Load provided dependencies
+        this.dependencies = getProvidedDependencies(filePath);
+    }
+};

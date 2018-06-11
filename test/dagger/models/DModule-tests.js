@@ -1,7 +1,7 @@
 import test from 'ava';
+import path from 'path';
 import assert from 'assert';
-const path = require('path');
-const DModule = require('./../../../src/dagger/models/DModule');
+import DModule from './../../../src/dagger/models/DModule';
 
 // Test data
 const javaFileModulePath = path.join(__dirname, "../../data/java_dagger_default/app/src/main/java/iammert/com/dagger_android_injection/di/AppModule.java");

@@ -1,11 +1,4 @@
-#!/usr/bin/env node
-'use strict';
-
-const fs = require('fs');
+import fs from 'fs';
 
 // Main code //
-const self = module.exports = {
-	getFilenameFromPath: (path) => {
-		return path.split("/").pop().split(".")[0];
-	}
-};
+export const getFilenameFromPath = path => path.split("/").pop().split(".")[0];

@@ -1,10 +1,8 @@
 #!/usr/bin/env node
-'use strict';
-
-const meow = require('meow');
-const router = require('./src/router');
-const updateNotifier = require('update-notifier');
-const pkg = require('./package.json');
+import meow from 'meow';
+import router from './src/router';
+import updateNotifier from 'update-notifier';
+import pkg from './package.json';
 
 updateNotifier({ pkg }).notify();
 

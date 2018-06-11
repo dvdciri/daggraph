@@ -1,14 +1,15 @@
-function TreeNode(n){
-    this.name = n;
-}
+export default class TreeNode {
+    constructor(n) {
+        this.name = n;
+    }
 
-TreeNode.prototype.setSize = function(s) {
-    this.size = s;
-}
+    children = [];
 
-TreeNode.prototype.addChildren = function(c) {
-    if(!this.children) this.children = [];
-    this.children.push(c);
-}
+    setSize = (s) => {
+        this.size = s;
+    }
 
-module.exports = TreeNode;
+    addChildren = (c) => {
+        this.children.push(c);
+    }
+}

@@ -1,8 +1,8 @@
 import test from 'ava';
+import path from 'path';
 import assert from 'assert';
-const path = require('path');
-const DComponent = require('./../../../src/dagger/models/DComponent');
-const DModule = require('./../../../src/dagger/models/DModule');
+import DModule from './../../../src/dagger/models/DModule';
+import DComponent from './../../../src/dagger/models/DComponent';
 
 // Test data
 const kotlinFileComponentPath = path.join(__dirname, "../../data/kotlin_dagger_default/app/src/main/java/org/loop/example/ApplicationComponent.kt");

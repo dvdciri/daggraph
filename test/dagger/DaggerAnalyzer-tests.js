@@ -1,12 +1,12 @@
 import test from 'ava';
+import path from 'path';
 import assert from 'assert';
-const path = require('path');
-const DAGGER_ANALYZER = require('./../../src/dagger/DaggerAnalyzer');
+import { findComponents } from './../../src/dagger/DaggerAnalyzer';
 
 /* start ################################### of java_dagger_defaut tests */
 
 test("GIVEN java sample project WHEN analyze THEN correct components found", t => {
-    return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
+    return findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         const expectedComponentsName = ["AppComponent"];
 
         t.is(components.length, expectedComponentsName.length); 
@@ -17,7 +17,7 @@ test("GIVEN java sample project WHEN analyze THEN correct components found", t =
 });
 
 test("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
-    return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
+    return findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         
         const expectedModulesNames = ["AppModule", "ActivityBuilder", "AndroidSupportInjectionModule"];
 
@@ -29,7 +29,7 @@ test("GIVEN java sample project WHEN analyze THEN correct modules found", t => {
 });
 
 test("GIVEN java sample project WHEN analyze THEN correct dependencies found", t => {
-    return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
+    return findComponents(path.join(__dirname, "../data/java_dagger_default")).then(components => {
         const modules = components[0].modules;
 
         const expectedAppModuleDeps = ["Resources", "String", "String"];
@@ -51,7 +51,7 @@ test("GIVEN java sample project WHEN analyze THEN correct dependencies found", t
 /* start ################################### kotlin_dagger_default tests ###################################*/
 
 test("GIVEN kotlin sample project WHEN analyze THEN correct components found", t => {
-    return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
+    return findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
         const expectedComponentsName = ["ApplicationComponent"];
       
         t.is(components.length, expectedComponentsName.length); 
@@ -60,7 +60,7 @@ test("GIVEN kotlin sample project WHEN analyze THEN correct components found", t
 });
 
 test("GIVEN kotlin sample project WHEN analyze THEN correct modules found", t => {
-    return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
+    return findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
 
         const expectedModulesNames = ["AndroidModule"];
         
@@ -72,7 +72,7 @@ test("GIVEN kotlin sample project WHEN analyze THEN correct modules found", t =>
 });
 
 test("GIVEN kotlin sample project WHEN analyze THEN correct dependencies found", t => {
-    return DAGGER_ANALYZER.findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
+    return findComponents(path.join(__dirname, "../data/kotlin_dagger_default")).then(components => {
         
         const expectedDeps = ["AndroidModule"];
         expectedDeps["AndroidModule"] = ["Context", "LocationManager", "String", "String"];

@@ -1,14 +1,15 @@
-function Bubble(n){
-    this.name = n;
-}
+export default class Bubble {
+    constructor(n) {
+        this.name = n;
+    }
 
-Bubble.prototype.setSize = function(s) {
-    this.size = s;
-}
+    children = [];
 
-Bubble.prototype.addChildren = function(c) {
-    if(!this.children) this.children = [];
-    this.children.push(c);
-}
+    setSize = (s) => {
+        this.size = s;
+    }
 
-module.exports = Bubble;
+    addChildren = (c) => {
+        this.children.push(c);
+    }
+}

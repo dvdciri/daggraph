@@ -1,7 +1,7 @@
-function Link(s, t){
-    this.source = s;
-    this.target = t;
-    this.value = 1;
+export default class Link {
+    constructor(s, t){
+        this.source = s;
+        this.target = t;
+        this.value = 1;
+    }
 }
-
-module.exports = Link;
