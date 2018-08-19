@@ -45,7 +45,8 @@ export default {
     findComponents(rootPath)
     .then(components => {
 
-      logger.v(JSON.stringify(components, null, 2))
+      // Enable if you want to print the graph in verbose logging
+      //logger.v(JSON.stringify(components, null, 2))
 
       if (components.length == 0) {
         logger.d(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));

@@ -8,6 +8,7 @@ import DModule from './models/DModule';
 import DComponent from './models/DComponent.js';
 
 import * as logger from '../utils/logger';
+import { getFilenameFromPath } from './../utils/utils';
 
 /**
  * Find and load the dagger components and modules
@@ -29,7 +30,9 @@ export async function findComponents(projectRootPath){
 
     logger.v(`Found ${files.length} files to analyze`)
 
-  return searchModules(files).then(modules => searchComponents(modules, files));
+  return searchModules(files)
+          .then(modules => Promise.resolve(findInjections(files)).then(injectionMap => addInjectionsToModules(injectionMap, modules)))
+          .then(modules => searchComponentsAndAddModules(modules, files));
 }
 
 function searchModules(files){
@@ -52,8 +55,7 @@ function searchModules(files){
       });
       fileSniffer.on("end", (files) => {
         logger.v(`Finished search, found ${daggerModules.length} modules.`)
-
-        resolve(findAndAddInjections(daggerModules, files));
+        resolve(daggerModules);
       });
       fileSniffer.on("error", (e) => {
         reject("Error while searching for modules "+e);
@@ -62,7 +64,7 @@ function searchModules(files){
     });
   }
   
-  function searchComponents(modules, files){
+  function searchComponentsAndAddModules(modules, files){
     return new Promise((resolve, reject) => {
 
       const daggerComponents = [];
@@ -87,7 +89,7 @@ function searchModules(files){
     });
   }
 
-  function findAndAddInjections(modules, files){
+  function findInjections(files){
     return new Promise((resolve, reject) => {
         const injectionPathMap = [];
 
@@ -99,7 +101,7 @@ function searchModules(files){
         const fileSniffer = FileSniffer.create().paths(files);
 
         fileSniffer.on('match', (path) => {
-          logger.v(`Found file containing @Inject at path ${path}`)
+          logger.v(`Found file containing @Inject at path ${getFilenameFromPath(path)}`)
 
           // Open file
           const file = FS.readFileSync(path, 'utf8');
@@ -127,16 +129,14 @@ function searchModules(files){
             // If the path is not already in the list, add it
             if (!injectionPathMap[depIdentifier].includes(path)){
               injectionPathMap[depIdentifier].push(path);
-            }
 
-            logger.v(`Found injection of ${depName} at path ${path}`)
+              logger.v(`Found injection of ${depName} in file ${getFilenameFromPath(path)}`)
+            }
           }
         });
         fileSniffer.on("end", (files) => {
-          logger.v(`Finished search, found ${injectionPathMap.length} dependencies injected.`)
-
-          addInjectionsToModules(injectionPathMap, modules);
-          resolve(modules);
+          logger.v(`Finished search for injections.`)
+          resolve(injectionPathMap);
         });
         fileSniffer.on("error", (e) => {
           reject("Error while searching for injections " + e);
@@ -147,25 +147,29 @@ function searchModules(files){
   }
 
   function addInjectionsToModules(injectionPathMap, modules){
-    logger.v(`Starte adding injections to modules...`)
+    return new Promise((resolve, reject) => {
 
-    modules.forEach(module => {
-      module.dependencies.forEach(dep => {
-        // Define the identifier base on the name and the named parameter if present
-        var depIndentifier = createDependencyIdentifier(dep.name, dep.named);
-        
-        // If i have some injections for that dependency in the map, add them
-        if(injectionPathMap[depIndentifier] !== undefined){
-          logger.v(`Adding injections for ${dep.name} inside ${module.name}`)
+      logger.v(`Started adding injections to modules...`)
 
-          injectionPathMap[depIndentifier].forEach(path => {
-            dep.addInjectionPath(path);
-          });
-        }
+      modules.forEach(module => {
+        module.dependencies.forEach(dep => {
+          // Define the identifier base on the name and the named parameter if present
+          var depIndentifier = createDependencyIdentifier(dep.name, dep.named);
+          
+          // If i have some injections for that dependency in the map, add them
+          if(injectionPathMap[depIndentifier] !== undefined){
+            logger.v(`Adding injections for ${dep.name} inside ${module.name}`)
+  
+            injectionPathMap[depIndentifier].forEach(path => {
+              dep.addInjectionPath(path);
+            });
+          }
+        });
       });
-    });
-
-    logger.v(`Finished adding injections.`)
+  
+      logger.v(`Finished adding injections.`)
+      resolve(modules)
+    })
   }
 
   function createDependencyIdentifier(depName, depNamed){
