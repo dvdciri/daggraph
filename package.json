@@ -8,15 +8,20 @@
     "url": "https://github.com/dvdciri"
   },
   "scripts": {
-    "start": "node cli.js",
-    "test": "ava --timeout=2m"
+    "clean": "rimraf bin",
+    "start": "npm run build && node bin/cli.js",
+    "build": "babel src --out-dir bin --copy-files",
+    "pretest": "npm run build",
+    "test": "ava --timeout=2m",
+    "prepublish": "npm run clean && npm run test && npm run build"
   },
   "bin": {
-    "daggraph": "cli.js"
+    "daggraph": "bin/cli.js"
   },
-  "main": "cli.js",
+  "main": "bin/cli.js",
   "keywords": [],
   "dependencies": {
+    "@babel/polyfill": "7.0.0-beta.49",
     "chalk": "^2.3.0",
     "filesniffer": "^1.0.3",
     "inquirer": "^4.0.2",
@@ -28,8 +33,14 @@
     "update-notifier": "^2.3.0"
   },
   "devDependencies": {
-    "ava": "^0.24.0",
+    "@babel/cli": "7.0.0-beta.49",
+    "@babel/core": "7.0.0-beta.49",
+    "@babel/plugin-proposal-class-properties": "7.0.0-beta.49",
+    "@babel/preset-env": "7.0.0-beta.49",
+    "@babel/register": "7.0.0-beta.49",
+    "ava": "^0.25.0",
     "eslint": "^4.14.0",
+    "rimraf": "^2.6.2",
     "xo": "^0.18.2"
   },
   "repository": {
@@ -40,5 +51,10 @@
     "url": "https://github.com/dvdciri/daggraph/issues"
   },
   "homepage": "https://github.com/dvdciri/daggraph",
-  "license": "MIT"
+  "license": "MIT",
+  "ava": {
+    "require": [
+      "@babel/register"
+    ]
+  }
 }

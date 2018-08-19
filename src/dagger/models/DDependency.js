@@ -1,19 +1,19 @@
-function DDependency(n){
-    this.name = n;
-}
+export default class DDependency {
+    constructor(name) {
+        this.name = name;
+    }
 
-DDependency.prototype.addDependency = function (dependency) {
-    if(!this.dependencies) this.dependencies = [];
-    this.dependencies.push(dependency);
-}
+    dependencies = [];
+    injectionPaths = [];
 
-DDependency.prototype.addInjectionPath = function (injectionPath) {
-    if(!this.injectionPaths) this.injectionPaths = [];
-    this.injectionPaths.push(injectionPath);
-}
+    addDependency = (dependency) => {
+        this.dependencies.push(dependency);
+    }
+    addInjectionPath = (injectionPath) => {
+        this.injectionPaths.push(injectionPath);
+    }
 
-DDependency.prototype.addNamed = function (n) {
-    this.named = n;
-}
-
-module.exports = DDependency;
+    addNamed = (n) => {
+        this.named = n;
+    }
+};

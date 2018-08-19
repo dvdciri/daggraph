@@ -1,19 +1,6 @@
-const FS = require('fs');
-const Utils = require('./../../utils/utils');
-const DModule = require('./DModule');
-
-function DComponent(){
-    this.modules = [];
-    this.injections = [];
-}
-
-DComponent.prototype.init = function(path, allModules){
-    const file = FS.readFileSync(path, 'utf8');
-    
-    this.name = Utils.getFilenameFromPath(path);
-    this.injections = getInjections(file);
-    this.modules = getModules(file, allModules);
-};
+import FS from 'fs';
+import { getFilenameFromPath } from './../../utils/utils';
+import DModule from './DModule';
 
 function getModules(file, allModules){
     // Find the modules in the components for java or kotlin
@@ -25,6 +12,7 @@ function getModules(file, allModules){
     const result = []
     if(moduleMatches != null){
         moduleMatches.forEach(element => {
+            let array;
             while ((array = modulesRegex.exec(element)) !== null) {
 
                 // If the model name in the component matches one of the modules that we have loaded, then add it to the component
@@ -58,6 +46,7 @@ function getInjections(file){
     var matches = file.match(injectionsRegex);
     if (matches != null) {
         matches.forEach(element => {
+            let array;
             while ((array = injectionsRegex.exec(element)) !== null) {
                 result.push(array[1]);
             }
@@ -66,4 +55,15 @@ function getInjections(file){
     return result;
 }
 
-module.exports = DComponent;
+export default class DComponent {
+    modules = [];
+    injections = [];
+
+    init = (path, allModules) => {
+        const file = FS.readFileSync(path, 'utf8');
+        
+        this.name = getFilenameFromPath(path);
+        this.injections = getInjections(file);
+        this.modules = getModules(file, allModules);
+    };
+};

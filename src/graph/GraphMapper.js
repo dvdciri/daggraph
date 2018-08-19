@@ -1,17 +1,17 @@
 /**
  * Use this class to map any dagger component to any kind of graph that we support.
  */
-const Bubble = require('./bubble/Bubble')
-const TreeNode = require('./tree/TreeNode')
-const Link = require('./linked_nodes/Link')
-const Node = require('./linked_nodes/Node')
-const LinkedNodes = require('./linked_nodes/LinkedNodes')
+import Bubble from './bubble/Bubble';
+import TreeNode from './tree/TreeNode';
+import Link from './linked_nodes/Link';
+import Node from './linked_nodes/Node';
+import LinkedNodes from './linked_nodes/LinkedNodes';
 
 
 /**
  * Converts components into a Bubble graph structure
  */
-function toBubbleGraph(components){
+export function toBubbleGraph(components){
     const mainBubble = new Bubble("Dependencies");
 
     components.map((component) => {
@@ -44,7 +44,7 @@ function toBubbleGraph(components){
 /**
  * Converts components into a Tree graph structure
  */
-function toTreeGraph(components){
+export function toTreeGraph(components){
     const mainNode = new TreeNode("Dependencies");
 
     components.map((component) => {
@@ -69,7 +69,7 @@ function toTreeGraph(components){
 /**
  * Converts components into a Linked nodes structure
  */
-function toLinkedNodes(components) {
+export function toLinkedNodes(components) {
     const linkedNodes = new LinkedNodes();
     var componentGroup = 1;
     var moduleGroup = 2;
@@ -111,7 +111,3 @@ function toLinkedNodes(components) {
     }); 
     return linkedNodes;
 }
-
-exports.toBubbleGraph = toBubbleGraph;
-exports.toTreeGraph = toTreeGraph;
-exports.toLinkedNodes = toLinkedNodes;

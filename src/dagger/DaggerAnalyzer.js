@@ -1,16 +1,17 @@
+import '@babel/polyfill';
 // Files
-const FileSniffer = require('filesniffer').FileSniffer;
-const FileHound = require('filehound');
-const FS = require('fs');
+import { FileSniffer } from 'filesniffer';
+import FileHound from 'filehound';
+import FS from 'fs';
 // Models
-const DModule = require('./models/DModule.js');
-const DComponent = require('./models/DComponent.js');
+import DModule from './models/DModule';
+import DComponent from './models/DComponent.js';
 
 /**
  * Find and load the dagger components and modules
  * @param {*Path of the android project} projectRootPath 
  */
-async function findComponents(projectRootPath){
+export async function findComponents(projectRootPath){
   console.log('Analyzing dagger components and modules..');
 
   const files = await FileHound
@@ -89,6 +90,7 @@ function searchModules(files){
           // Open file
           const file = FS.readFileSync(path, 'utf8');
           // Find injections
+          let fullMatch;
           while ((fullMatch = injectRegex.exec(file)) !== null) {
             var depName;
             var depIdentifier;
@@ -147,5 +149,3 @@ function searchModules(files){
     if (depNamed !== undefined && depNamed !== null) depIndentifier = depIndentifier + "**" + depNamed;
     return depIndentifier;
   }
-
-  exports.findComponents = findComponents;

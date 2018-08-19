@@ -1,12 +1,10 @@
-#!/usr/bin/env node
-'use strict';
-const Chalk = require('chalk');
-const path = require('path');
-const fs = require('fs');
-var Inquirer = require("inquirer");
-const DAGGER_ANALYZER = require('./dagger/DaggerAnalyzer');
-const GRAPH_MAPPER = require('./graph/GraphMapper');
-const opn = require('opn');
+import Chalk from 'chalk';
+import path from 'path';
+import fs from 'fs';
+import Inquirer from 'inquirer';
+import { findComponents } from './dagger/DaggerAnalyzer';
+import * as GRAPH_MAPPER from './graph/GraphMapper';
+import opn from 'opn';
 const log = console.log;
 
 // Chart types
@@ -17,7 +15,7 @@ const CHART = "Chart";
 const JSON_TYPE = "Json";
 
 // Main code //
-const self = module.exports = {
+export default {
   init: (input, flags) => {
 
     // Default project path is the current folder
@@ -44,7 +42,7 @@ const self = module.exports = {
     }
 
     // Scan the folder structure and get the dagger components
-    DAGGER_ANALYZER.findComponents(rootPath)
+    findComponents(rootPath)
     .then(components => {
 
       if (components.length == 0) {
