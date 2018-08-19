@@ -5,7 +5,7 @@ import Inquirer from 'inquirer';
 import { findComponents } from './dagger/DaggerAnalyzer';
 import * as GRAPH_MAPPER from './graph/GraphMapper';
 import opn from 'opn';
-const log = console.log;
+import * as logger from './utils/logger';
 
 // Chart types
 const BUBBLE_CHART = "Bubble chart";
@@ -37,7 +37,7 @@ export default {
 
     // If is not a gradle folder, stop
     if (!isGradleFolder(rootPath)) {
-      log(Chalk.red(`This is not a gradle folder`));
+      logger.d(Chalk.red(`This is not a gradle folder`));
       process.exit(2);
     }
 
@@ -45,8 +45,10 @@ export default {
     findComponents(rootPath)
     .then(components => {
 
+      logger.v(JSON.stringify(components, null, 2))
+
       if (components.length == 0) {
-        log(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
+        logger.d(Chalk.red(`Couldn't find any components, are you sure this project is using Dagger?`));
         process.exit(2);
       }
 
@@ -61,7 +63,7 @@ export default {
       }     
       fileDataPromise.then((fileData) => createFileAndSave(fileData)); 
 
-    }).catch(msg => log(msg));
+    }).catch(msg => logger.d(msg));
   }
 };
 
@@ -140,7 +142,7 @@ function createFileAndSave(fileData){
     fs.mkdirSync(getBuildFolderPath());
   }
 
-  log(`Opening: ${Chalk.green(absFilePath)}`);
+  logger.d(`Opening: ${Chalk.green(absFilePath)}`);
 
   fs.writeFile(output_path, fileData.fileContent, function(err) {
     opn(absFilePath, { wait: false });
