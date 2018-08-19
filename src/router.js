@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import Inquirer from 'inquirer';
 import { findComponents } from './dagger/DaggerAnalyzer';
-import GRAPH_MAPPER from './graph/GraphMapper';
+import * as GRAPH_MAPPER from './graph/GraphMapper';
 import opn from 'opn';
 const log = console.log;
 

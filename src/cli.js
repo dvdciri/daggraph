@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import meow from 'meow';
-import router from './src/router';
+import router from './router';
 import updateNotifier from 'update-notifier';
-import pkg from './package.json';
+import pkg from '../package.json';
 
 updateNotifier({ pkg }).notify();
 

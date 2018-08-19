@@ -10,7 +10,7 @@
   "scripts": {
     "clean": "rimraf bin",
     "start": "npm run build && node bin/cli.js",
-    "build": "babel src --out-dir bin",
+    "build": "babel src --out-dir bin --copy-files",
     "pretest": "npm run build",
     "test": "ava --timeout=2m"
   },
