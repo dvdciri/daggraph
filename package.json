@@ -12,7 +12,8 @@
     "start": "npm run build && node bin/cli.js",
     "build": "babel src --out-dir bin --copy-files",
     "pretest": "npm run build",
-    "test": "ava --timeout=2m"
+    "test": "ava --timeout=2m",
+    "prepublish": "npm run clean && npm run test && npm run build"
   },
   "bin": {
     "daggraph": "bin/cli.js"
