@@ -14,166 +14,165 @@ import { getFilenameFromPath } from './../utils/utils';
  * Find and load the dagger components and modules
  * @param {*Path of the android project} projectRootPath 
  */
-export async function findComponents(projectRootPath){
+export async function findComponents(projectRootPath) {
   logger.d('Analyzing dagger components and modules..');
 
   const files = await FileHound
     .create()
     .paths(projectRootPath)
     // We can't specify build/* because it will clash with the travis build folder 
-    .discard("build/generated", "build/tmp", "build/intermediates", "build/kotlin", "build/outputs", "build/reports") 
+    .discard("build/generated", "build/tmp", "build/intermediates", "build/kotlin", "build/outputs", "build/reports")
     .depth(20)
     .ignoreHiddenDirectories()
     .ignoreHiddenFiles()
     .ext('.java', '.kt')
     .find();
 
-    logger.v(`Found ${files.length} files to analyze`)
+  logger.v(`Found ${files.length} files to analyze`)
 
   return searchModules(files)
-          .then(modules => Promise.resolve(findInjections(files)).then(injectionMap => addInjectionsToModules(injectionMap, modules)))
-          .then(modules => searchComponentsAndAddModules(modules, files));
+    .then(modules =>
+      findInjections(files).then(injectionMap => addInjectionsToModules(injectionMap, modules))
+    )
+    .then(modules => searchComponentsAndAddModules(modules, files));
 }
 
-function searchModules(files){
-    return new Promise((resolve, reject) => {
-      logger.v(`Started searching for modules....`)
+function searchModules(files) {
+  return new Promise((resolve, reject) => {
+    logger.v(`Started searching for modules....`)
 
-      const daggerModules = [];
-      const analyzed = []; 
-      const fileSniffer = FileSniffer.create().paths(files);
-  
-      fileSniffer.on("match", (path) => {
-        if (analyzed.includes(path)) return;
-        analyzed.push(path);
+    const daggerModules = [];
+    const analyzed = [];
+    const fileSniffer = FileSniffer.create().paths(files);
 
-        var module = new DModule();
-        module.init(path);
-        daggerModules.push(module);
+    fileSniffer.on("match", (path) => {
+      if (analyzed.includes(path)) return;
+      analyzed.push(path);
 
-        logger.v(`Found new module at path: ${path}`)
-      });
-      fileSniffer.on("end", (files) => {
-        logger.v(`Finished search, found ${daggerModules.length} modules.`)
-        resolve(daggerModules);
-      });
-      fileSniffer.on("error", (e) => {
-        reject("Error while searching for modules "+e);
-      });
-      fileSniffer.find("@Module");
+      var module = new DModule();
+      module.init(path);
+      daggerModules.push(module);
+
+      logger.v(`Found new module at path: ${path}`)
     });
-  }
-  
-  function searchComponentsAndAddModules(modules, files){
-    return new Promise((resolve, reject) => {
-
-      const daggerComponents = [];
-      const analyzed = []; 
-      const fileSniffer = FileSniffer.create().paths(files);
-  
-      fileSniffer.on('match', (path) => {
-        if (analyzed.includes(path)) return;
-        analyzed.push(path);
-
-        const component = new DComponent();
-        component.init(path, modules);
-        daggerComponents.push(component);
-      });
-      fileSniffer.on("end", (files) => {
-        resolve(daggerComponents);
-      });
-      fileSniffer.on("error", (e) => {
-        reject("Error while searching for components " + e);
-      });
-      fileSniffer.find(/@(?:dagger\.)?(?:Component|Subcomponent)/);
+    fileSniffer.on("end", (files) => {
+      logger.v(`Finished search, found ${daggerModules.length} modules.`)
+      resolve(daggerModules);
     });
-  }
-
-  function findInjections(files){
-    return new Promise((resolve, reject) => {
-        const injectionPathMap = [];
-
-        logger.v(`Started searching for injections...`)
-
-        // Find all the field injections for kotline and java (group 1 java only, group 2 kotlin only) 
-        const injectRegex = /(?:(?:@Inject(?:\n|.)*?\s+(?:protected|public|lateinit|(\w+(?:\.\w+)*))?\s+(?:var(?:\n|.)*?:\s*)?)|(?:@field\s*:\s*\[(?:\n|.)*?Inject(?:\n|.)*?\]\s*(?:protected|public|lateinit)?\s*var\s*.+?\s*:\s*))(\w+(?:\.\w+)*)/g;
-        const namedRegex = /@*Named\(\"(\w*)\"\)/;
-        const fileSniffer = FileSniffer.create().paths(files);
-
-        fileSniffer.on('match', (path) => {
-          logger.v(`Found file containing @Inject at path ${getFilenameFromPath(path)}`)
-
-          // Open file
-          const file = FS.readFileSync(path, 'utf8');
-          // Find injections
-          let fullMatch;
-          while ((fullMatch = injectRegex.exec(file)) !== null) {
-            var depName;
-            var depIdentifier;
-
-            // Name Could be at 1 or 3
-            if (fullMatch[1] !== undefined && fullMatch[1] !== null) depName = fullMatch[1];
-            else depName = fullMatch[2];
-
-            // Look for @Named in the full matcher and add it to the dep identifier
-            const namedMatch = namedRegex.exec(fullMatch[0]);
-            if(namedMatch !== null){
-              depIdentifier = createDependencyIdentifier(depName, namedMatch[1]);
-            }else{
-              depIdentifier = depName;
-            }
-
-            // If the array of paths for that dep is not initialised, init
-            if (injectionPathMap[depIdentifier] === undefined) injectionPathMap[depIdentifier] = [];
-
-            // If the path is not already in the list, add it
-            if (!injectionPathMap[depIdentifier].includes(path)){
-              injectionPathMap[depIdentifier].push(path);
-
-              logger.v(`Found injection of ${depName} in file ${getFilenameFromPath(path)}`)
-            }
-          }
-        });
-        fileSniffer.on("end", (files) => {
-          logger.v(`Finished search for injections.`)
-          resolve(injectionPathMap);
-        });
-        fileSniffer.on("error", (e) => {
-          reject("Error while searching for injections " + e);
-        });
-        fileSniffer.find(/@Inject/i);
-
+    fileSniffer.on("error", (e) => {
+      reject("Error while searching for modules " + e);
     });
-  }
+    fileSniffer.find("@Module");
+  });
+}
 
-  function addInjectionsToModules(injectionPathMap, modules){
-    return new Promise((resolve, reject) => {
+function searchComponentsAndAddModules(modules, files) {
+  return new Promise((resolve, reject) => {
 
-      logger.v(`Started adding injections to modules...`)
+    const daggerComponents = [];
+    const analyzed = [];
+    const fileSniffer = FileSniffer.create().paths(files);
 
-      modules.forEach(module => {
-        module.dependencies.forEach(dep => {
-          // Define the identifier base on the name and the named parameter if present
-          var depIndentifier = createDependencyIdentifier(dep.name, dep.named);
-          
-          // If i have some injections for that dependency in the map, add them
-          if(injectionPathMap[depIndentifier] !== undefined){
-            logger.v(`Adding injections for ${dep.name} inside ${module.name}`)
-  
-            injectionPathMap[depIndentifier].forEach(path => {
-              dep.addInjectionPath(path);
-            });
-          }
+    fileSniffer.on('match', (path) => {
+      if (analyzed.includes(path)) return;
+      analyzed.push(path);
+
+      const component = new DComponent();
+      component.init(path, modules);
+      daggerComponents.push(component);
+    });
+    fileSniffer.on("end", (files) => {
+      resolve(daggerComponents);
+    });
+    fileSniffer.on("error", (e) => {
+      reject("Error while searching for components " + e);
+    });
+    fileSniffer.find(/@(?:dagger\.)?(?:Component|Subcomponent)/);
+  });
+}
+
+function findInjections(files) {
+  return new Promise((resolve, reject) => {
+    const injectionPathMap = [];
+
+    logger.v(`Started searching for injections...`)
+
+    // Find all the field injections for kotline and java (group 1 java only, group 2 kotlin only) 
+    const injectRegex = /(?:(?:@Inject(?:\n|.)*?\s+(?:protected|public|lateinit|(\w+(?:\.\w+)*))?\s+(?:var(?:\n|.)*?:\s*)?)|(?:@field\s*:\s*\[(?:\n|.)*?Inject(?:\n|.)*?\]\s*(?:protected|public|lateinit)?\s*var\s*.+?\s*:\s*))(\w+(?:\.\w+)*)/g;
+    const namedRegex = /@*Named\(\"(\w*)\"\)/;
+    const fileSniffer = FileSniffer.create().paths(files);
+
+    fileSniffer.on('match', (path) => {
+      logger.v(`Found file containing @Inject at path ${getFilenameFromPath(path)}`)
+
+      // Open file
+      const file = FS.readFileSync(path, 'utf8');
+      // Find injections
+      let fullMatch;
+      while ((fullMatch = injectRegex.exec(file)) !== null) {
+        var depName;
+        var depIdentifier;
+
+        // Name Could be at 1 or 3
+        if (fullMatch[1] !== undefined && fullMatch[1] !== null) depName = fullMatch[1];
+        else depName = fullMatch[2];
+
+        // Look for @Named in the full matcher and add it to the dep identifier
+        const namedMatch = namedRegex.exec(fullMatch[0]);
+        if (namedMatch !== null) {
+          depIdentifier = createDependencyIdentifier(depName, namedMatch[1]);
+        } else {
+          depIdentifier = depName;
+        }
+
+        // If the array of paths for that dep is not initialised, init
+        if (injectionPathMap[depIdentifier] === undefined) injectionPathMap[depIdentifier] = [];
+
+        // If the path is not already in the list, add it
+        if (!injectionPathMap[depIdentifier].includes(path)) {
+          injectionPathMap[depIdentifier].push(path);
+
+          logger.v(`Found injection of ${depName} in file ${getFilenameFromPath(path)}`)
+        }
+      }
+    });
+    fileSniffer.on("end", (files) => {
+      logger.v(`Finished search for injections.`)
+      resolve(injectionPathMap);
+    });
+    fileSniffer.on("error", (e) => {
+      reject("Error while searching for injections " + e);
+    });
+    fileSniffer.find(/@Inject/i);
+
+  });
+}
+
+function addInjectionsToModules(injectionPathMap, modules) {
+  logger.v(`Started adding injections to modules...`)
+
+  modules.forEach(module => {
+    module.dependencies.forEach(dep => {
+      // Define the identifier base on the name and the named parameter if present
+      var depIndentifier = createDependencyIdentifier(dep.name, dep.named);
+
+      // If i have some injections for that dependency in the map, add them
+      if (injectionPathMap[depIndentifier] !== undefined) {
+        logger.v(`Adding injections for ${dep.name} inside ${module.name}`)
+
+        injectionPathMap[depIndentifier].forEach(path => {
+          dep.addInjectionPath(path);
         });
-      });
-  
-      logger.v(`Finished adding injections.`)
-      resolve(modules)
-    })
-  }
+      }
+    });
+  });
 
-  function createDependencyIdentifier(depName, depNamed){
-    var depIndentifier = depName;
-    if (depNamed !== undefined && depNamed !== null) depIndentifier = depIndentifier + "**" + depNamed;
-    return depIndentifier;
-  }
+  logger.v(`Finished adding injections.`)
+  return modules
+}
+
+function createDependencyIdentifier(depName, depNamed) {
+  var depIndentifier = depName;
+  if (depNamed !== undefined && depNamed !== null) depIndentifier = depIndentifier + "**" + depNamed;
+  return depIndentifier;
+}
