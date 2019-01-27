@@ -151,7 +151,7 @@ function createFileAndSave(fileData){
 }
 
 function isGradleFolder(rootPath){
-  return fs.existsSync(path.join(rootPath, 'build.gradle'));
+  return fs.existsSync(path.join(rootPath, 'build.gradle')) || fs.existsSync(path.join(rootPath, 'build.gradle.kts'));
 }
 
 function getBuildFolderPath(){
