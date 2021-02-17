@@ -8,6 +8,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a>
 </p>
 
+## Deprecation
+This library is now deprecated in favour of solutions based directly on the Dagger PSI (`BindingGraphPlugin`), therefore will no longer be maintained.
+
+This is an example project that works pretty well: https://github.com/arunkumar9t2/scabbard.
+
 ## Usage
 Simple usage:
 > daggraph `<folder_path>`
