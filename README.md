@@ -9,7 +9,7 @@
 </p>
 
 ## Deprecation
-This library is now deprecated in favour of solutions based directly on the Dagger PSI (`BindingGraphPlugin`), therefore will no longer be maintained.
+This library is now deprecated in favour of solutions based directly on the Dagger PSI (`BindingGraphPlugin`). The project will no longer be maintained.
 
 This is an example project that works pretty well: https://github.com/arunkumar9t2/scabbard.
 
